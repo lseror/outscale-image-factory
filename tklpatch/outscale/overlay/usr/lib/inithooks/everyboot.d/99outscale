@@ -1,0 +1,4 @@
+# Not using sysfsutils because it's not in the core turnkey
+# recipe and I don't want to fork it. AFAIK there's no
+# other clean and easy way to install packages.
+echo 0 > /sys/block/vda/queue/rotational

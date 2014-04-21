@@ -1,0 +1,23 @@
+#!/bin/sh
+# Install SSH key
+/bin/mkdir -p /root/.ssh
+wget http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key -O- > /root/.ssh/authorized_keys
+/bin/chmod 700 /root/.ssh -R
+
+# Set hostname
+wget http://169.254.169.254/latest/meta-data/local-hostname -O- | cut -d '.' -f 1 > /etc/hostname
+hostname -F /etc/hostname
+HOSTLINE="127.0.0.1 $(hostname)"
+grep -q "^${HOSTLINE}$" /etc/hosts || echo $HOSTLINE >>/etc/hosts
+
+# Preseed appliance domain name
+. /etc/default/inithooks
+printf "export APP_DOMAIN=" >>$INITHOOKS_CONF
+wget http://169.254.169.254/latest/meta-data/public-hostname -O- >>$INITHOOKS_CONF
+
+# The firstboot hooks are run again on the first root login.
+# They are also run when one calls turnkey-init by hand to
+# reconfigure the appliance. Disable scripts that should
+# only run once.
+chmod -x /usr/lib/inithooks/firstboot.d/30turnkey-init-fence
+chmod -x /usr/lib/inithooks/firstboot.d/99outscale

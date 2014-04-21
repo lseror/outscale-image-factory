@@ -1,0 +1,40 @@
+#!/bin/sh
+# This script is run from the chroot
+set -e -u -x
+
+# Delete & lock the root password
+passwd -d root
+passwd -l root
+
+# Disable inithook used to change root password
+chmod -x /usr/lib/inithooks/firstboot.d/30rootpass
+
+# Disable inithook used to configure turnkey backup services
+chmod -x /usr/lib/inithooks/firstboot.d/80hub-services
+
+# Force boot-time inithooks to run on the serial console for
+# easier debugging
+echo "INITHOOKS_CHVT=" >>/etc/default/inithooks
+
+# Disable confconsole.
+# This is a console app running on a VT with a menu to configure
+# networking and some info on the appliance.
+update-rc.d confconsole remove
+
+# Remove logs
+rm -f /var/log/alternatives.log
+rm -f /var/log/auth.log
+rm -f /var/log/cron-apt/*
+rm -f /var/log/daemon.log
+rm -f /var/log/debug
+rm -f /var/log/dmesg
+rm -f /var/log/dmesg.*
+rm -f /var/log/fsck/*
+rm -f /var/log/kern.log
+rm -f /var/log/mail.*
+rm -f /var/log/messages
+rm -f /var/log/syslog
+rm -f /var/log/user.log
+echo > /var/log/faillog
+echo > /var/log/lastlog
+echo > /var/log/wtmp

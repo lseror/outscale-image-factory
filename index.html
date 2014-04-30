@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>outscale-image-factory</title>
+    <!-- LiveReload -->
+    <!-- <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script> -->
+
+    <!-- jQuery -->
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+
+    <!-- marked -->
+    <script src="./js/marked.js"></script>
+
+    <!-- ditto -->
+    <script src="./js/ditto.js"></script>
+    <link rel="stylesheet" href="./css/ditto.css">
+</head>
+<body>
+    <!-- essential -->
+    <div id="sidebar"></div>
+    <div id="content"></div>
+    <div id="hide"></div>
+
+    <!-- optional -->
+    <div id="back_to_top">back to top</div>
+    <div id="edit">edit</div>
+    <div id="loading">Loading ...</div>
+    <div id="error"></div>
+
+    <script>
+        // essential settings
+        ditto.index = "README.md",
+        ditto.sidebar_file = "sidebar.md",
+
+        // optional settings if you want github search
+        ditto.github_username = "nodalink";
+        ditto.github_repo = "outscale-image-factory";
+
+        // where the docs are actually stored on github - so you can edit
+        ditto.base_url = "https://github.com/nodalink/outscale-image-factory/edit/gh-pages";
+
+        // run
+        ditto.run();
+    </script>
+</body>
+</html>

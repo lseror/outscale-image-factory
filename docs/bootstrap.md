@@ -50,15 +50,15 @@ apt-get install qemu-utils unzip parted lvm2 git
 	 
  8. Apply the patches by hand:
  ```
- rsync -av /mnt/turnkey/outscale/tklpatch/headless/overlay/ /mnt/turnkey/
- rsync -av /mnt/turnkey/outscale/tklpatch/outscale/overlay/ /mnt/turnkey/
+ rsync -av /mnt/turnkey/outscale/tklpatch/headless/overlay/ /mnt/
+ rsync -av /mnt/turnkey/outscale/tklpatch/outscale/overlay/ /mnt/
 
- chroot /mnt/turnkey /turnkey/outscale/tklpatch/outscale/conf
+ chroot /mnt /turnkey/outscale/tklpatch/outscale/conf
  ```
 
  8. Update grub config:
  ```shell
- chroot /mnt/turnkey update-grub
+ chroot /mnt update-grub
  ```
 
  10. Sync and unmount:

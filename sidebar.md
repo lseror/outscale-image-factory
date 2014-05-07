@@ -1,5 +1,5 @@
 # [Outscale Image Factory]()
-version 0.1
+version 0.2
 
 - [Github Repository](http://github.com/nodalink/outscale-image-factory)
 

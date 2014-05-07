@@ -1,6 +1,6 @@
 # How to build a Turnkey Linux appliance
 
-This document explains how to build a Turnkey Linux appliance for the Outscale cloud.
+This document explains how to build a Turnkey Linux appliance by hand, using the factory that we [bootstrapped earlier](#docs/bootstrap).
 
 ## Factory setup
 
@@ -20,21 +20,28 @@ On a fresh factory instance two initial steps are needed:
 
 This example rebuilds the `tkldev` appliance with itself. Each appliance is hosted in [its own repository on github](https://github.com/turnkeylinux-apps).
 
- 1. Attach a new volume `/dev/sdb` to the factory VM. *The size of the volume should be 10GB*.
- 
- 2. Build the appliance:
+ 0. Setup the environment:
  ```shell
- APP=tkldev
- mkdir /media/$APP
- rm -rf /tmp/$APP/product.*
- mkdir /tmp/$APP
- /turnkey/outscale/build_ami.py --verbose --mount-point=/media/$APP --work-dir=/tmp/$APP --turnkey-app=$APP --device=/dev/sdb 2>&1|tee /tmp/$APP/log
+ PATH=$PATH:/turnkey/outscale
+ INSTANCE_ID=$(wget -O- http://169.254.169.254/latest/meta-data/instance-id)
+```
+
+ 1. Attach a new volume to the factory. Record the result.
+ ```shell
+ create_ami.py -v -v --attach-new-volume $INSTANCE_ID
+ DEVICE=/dev/SOMETHING
+ VOLUME_ID=vol-SOMETHING
  ```
 
- 3. Create the actual machine image from the `/dev/sdb` volume. This step is not (yet) integrated so it should be done by hand. The following example uses `awscli`:
+ 2. Build the appliance on the volume:
  ```shell
- aws ec2 detach-volume --volume-id $VOLUME
- aws ec2 attach-volume --volume-id $VOLUME --instance-id $SOME_INSTANCE --device /dev/sda1
- aws ec2 create-image --instance-id $SOME_INSTANCE --name app-$APP
- aws ec2 detach-volume --volume-id $VOLUME
+ APP=tkldev
+ build_ami.py -v -v --build --mount-point=/srv/rootfs/$APP --work-dir=/srv/patch/$APP --turnkey-app=$APP --device=$DEVICE 2>&1|tee /tmp/$APP.log
+ ```
+
+ 3. Create the actual machine image and cleanup:
+ ```shell
+ create_ami.py -v -v --create-image app-$APP --volume-id $VOLUME_ID
+ build_ami.py -v -v --clean --turnkey-app=$APP
+ create_ami.py -v -v --destroy-volume $VOLUME_ID
  ```

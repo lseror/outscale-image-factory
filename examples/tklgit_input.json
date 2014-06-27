@@ -1,0 +1,6 @@
+[
+    ["turnkeylinux-apps", {}],
+    ["nodalink",
+     {"outscale-factory-master": "master",
+      "outscale-factory-slave": "master"}]
+]

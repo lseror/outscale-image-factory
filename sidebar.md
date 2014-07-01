@@ -1,10 +1,13 @@
-# [Outscale Image Factory]()
-version 0.2
-
-- [Github Repository](http://github.com/nodalink/outscale-image-factory)
-
-[ditto:searchbar]
+# [Outscale TKL Factory]()
 
 ## HOWTOs
-- [Bootstrap the Turnkey factory](#docs/bootstrap)
-- [Build a Turnkey appliance](#docs/build)
+- [Bootstrap a factory](#docs/bootstrap)
+- [Build a TKL app](#docs/build)
+
+## Search
+[ditto:searchbar]
+
+## Repositories on Github
+- [outscale-image-factory](http://github.com/nodalink/outscale-image-factory)
+- [outscale-factory-master](http://github.com/nodalink/outscale-factory-master)
+- [outscale-factory-slave](http://github.com/nodalink/outscale-factory-slave)

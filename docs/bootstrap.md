@@ -1,41 +1,40 @@
-# How to bootstrap the Turnkey Linux factory
+# Bootstraping a Turnkey Linux factory on the Outscale cloud from scratch
 
- This document explains how to create a Turnkey Linux factory from scratch on the Outscale cloud.
+ 1. Create a Linux instance. This example uses a Debian Squeeze instance. Attach a `20GB` volume named `/dev/sdb` to the instance.
 
- 1. Create a Linux VM named `bootstrap` with two volumes. This example uses a Debian Squeeze VM with the second volume mounted on `/dev/sdb`. *The size of `/dev/sdb` must be at least 20GB*.
-
- 2. On the `bootstrap` VM install the the dependencies:
- ```shell
+ 2. Open a shell on the instance and install the dependencies:
+ ```
 apt-get update
-apt-get install qemu-utils unzip parted lvm2 git
+apt-get install qemu-utils unzip parted lvm2 git rsync wget
  ```
  
- 3. Download the [Turnkey factory appliance](http://www.turnkeylinux.org/tkldev) and unpack it:
- ```shell
- wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/turnkey-tkldev-13.0-wheezy-amd64-vmdk.zip
-
- unzip turnkey-tkldev-13.0-wheezy-amd64-vmdk.zip
+ 3. Download the [tkldev appliance VMDK](http://www.turnkeylinux.org/tkldev) and unpack it:
+ ```
+ZIPFILE=turnkey-tkldev-13.0-wheezy-amd64-vmdk.zip
+wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
+ unzip $ZIPFILE
  cd turnkey-tkldev-13.0-wheezy-amd64/
  ```
 
- 4. Convert it to a raw image with `qemu-img` and copy it to `/dev/sdb`:
- ```shell
- qemu-img convert -O raw turnkey-tkldev-13.0-wheezy-amd64.vmdk turnkey-tkldev-13.0-wheezy-amd64.raw
-
+ 4. Convert the VMDK to a raw image with `qemu-img` and copy it to `/dev/sdb`:
+ ```
+ qemu-img convert -O raw \
+	 turnkey-tkldev-13.0-wheezy-amd64.vmdk \
+	 turnkey-tkldev-13.0-wheezy-amd64.raw
  cp turnkey-tkldev-13.0-wheezy-amd64.raw /dev/sdb
  sync
  ```
 
  5. Activate the LVM volume:
- ```shell
+ ```
  partprobe /dev/sdb
  vgscan
  vgchange -ay turnkey
  sleep 3
  ```
  
- 6. Mount the factory on `/mnt`:
-  ```shell
+ 6. Mount the filesystems under `/mnt`:
+  ```
  mount /dev/mapper/turnkey-root /mnt
  mount /dev/sdb1 /mnt/boot
  mount --bind /dev /mnt/dev
@@ -43,26 +42,28 @@ apt-get install qemu-utils unzip parted lvm2 git
  mount --bind /sys /mnt/sys
 ```
 
- 7. Download the factory tools:
- ```shell
- git clone https://github.com/nodalink/outscale-image-factory.git /mnt/turnkey/outscale
+ 7. Clone the factory tools under `/mnt/usr/src`:
+ ```
+ cd /mnt/usr/src
+ git clone https://github.com/nodalink/outscale-image-factory.git
  ```
 	 
- 8. Apply the patches by hand:
+ 8. Apply the Turnkey Linux patches by hand:
  ```
- rsync -av /mnt/turnkey/outscale/tklpatch/headless/overlay/ /mnt/
- rsync -av /mnt/turnkey/outscale/tklpatch/outscale/overlay/ /mnt/
-
- chroot /mnt /turnkey/outscale/tklpatch/outscale/conf
+ CHROOT=/mnt
+ TOOLS=/usr/src/outscale-image-factory
+ rsync -av $CHROOT/$TOOLS/tklpatch/headless/overlay/ $CHROOT/
+ rsync -av $CHROOT/$TOOLS/tklpatch/outscale/overlay/ $CHROOT/
+ chroot $CHROOT $TOOLS/tklpatch/outscale/conf
  ```
 
- 8. Update grub config:
- ```shell
+ 8. Update the grub config:
+ ```
  chroot /mnt update-grub
  ```
 
- 10. Sync and unmount:
- ```shell
+ 10. Cleanup:
+ ```
  sync
  umount /mnt/boot
  umount /mnt/dev
@@ -71,5 +72,4 @@ apt-get install qemu-utils unzip parted lvm2 git
  umount /mnt
  ```
 
- 11. The factory on `/dev/sdb` should now be ready to boot.
- 
+ 11. Detach the `/dev/sdb` volume, attach it as the root filesystem on an instance (`/dev/sda1`) and boot the factory.

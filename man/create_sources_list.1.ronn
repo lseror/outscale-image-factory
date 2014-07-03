@@ -1,0 +1,35 @@
+create_sources_list(1) -- create an APT sources.list file
+=========================================================
+
+## SYNOPSIS
+
+`create_sources_list` <sources_list_filename> <mirror_url> <distribution_codename>
+
+## DESCRIPTION
+
+**create_sources_list** generates an APT sources.list(5) file for each Debian
+GNU/Linux or Ubuntu release. The generated file includes all first-party
+repositories and security updates.
+
+The first argument is the filename of the sources.list(5) file to generate.
+
+The second argument is the distribution mirror URL.
+
+The third argument is the distribution release codename such as `wheezy`
+(Debian GNU/Linux 7) or `trusty` (Ubuntu 14.04)
+
+## USAGE EXAMPLE
+
+Generate a sources.list(5) file for Debian `wheezy` using the french mirror:
+
+	$ create_sources_list /mnt/etc/apt/sources.list \
+	http://ftp.fr.debian.org/debian/ wheezy
+
+## BUGS
+
+The list of distribution release codenames is hard-coded and needs to be
+updated for every new release.
+
+## SEE ALSO
+
+sources.list(5)

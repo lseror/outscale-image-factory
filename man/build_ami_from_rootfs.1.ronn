@@ -1,0 +1,51 @@
+build_ami_from_rootfs(1) -- copy filesystem to block device
+===========================================================
+
+## SYNOPSIS
+
+`build_ami_from_rootfs` [<options>] `--rootfs=`<rootfs> `--device=`<device><br>
+
+## DESCRIPTION
+
+**build_ami_from_rootfs** takes a fresh, unpartitionned block device,
+copies the content of a directory (the _rootfs_) to the device and
+makes the device bootable.
+
+This command must be run as `root`.
+
+This command forms the basis of the build_ami(1) command.
+
+## OPTIONS
+
+Mandatory options:
+
+  * `-r` <rootfs>, `--rootfs=`<rootfs>:
+    The directory holding the root filesystem.
+
+  * `-d` <device>, `--device=`<device>:
+    The block device onto which the filesystem will be copied.
+
+Directory options:
+
+  * `-m` <directory>, `--mount-point=`<directory>:
+    The temporary mount point used to mount the block device.
+    The default is _/mnt_.
+
+Miscellaneous options:
+
+  * `-n`, `--dryrun`:
+    Go through each step of the build process but do not actually run
+    any command.
+
+  * `-v`, `--verbose`:
+    Print messages to the console. Use twice for more output.
+
+## EXAMPLES
+
+Copy a new filesystem to `/dev/sdb`:
+
+    $ build_ami_from_rootfs -v --rootfs=/tmp/my.rootfs --device=/dev/sdb
+
+## SEE ALSO
+
+build_ami(1), create_ami(1)

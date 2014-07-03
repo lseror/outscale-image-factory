@@ -1,0 +1,38 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CREATE_FSTAB" "1" "July 2014" "" ""
+.
+.SH "NAME"
+\fBcreate_fstab\fR \- create an fstab file
+.
+.SH "SYNOPSIS"
+\fBcreate_fstab\fR \fIfstab_filename\fR \fIroot_device\fR
+.
+.SH "DESCRIPTION"
+\fBcreate_fstab\fR generates an fstab(5) file for a given root device\.
+.
+.P
+The first argument is the filename of the fstab to generate\.
+.
+.P
+The second argument is the root device that will be included in the generated fstab file\.
+.
+.P
+This command is typically used to generate an \fB/etc/fstab\fR file for a virtual machine\.
+.
+.SH "USAGE EXAMPLE"
+Generate an fstab(5) file for the rootfs mounted under \fB/mnt\fR using the \fB/dev/sdb\fR block device:
+.
+.IP "" 4
+.
+.nf
+
+$ create_fstab /mnt/etc/fstab /dev/sdb
+.
+.fi
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+fstab(5), blkid(8)

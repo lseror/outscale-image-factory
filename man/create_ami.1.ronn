@@ -1,0 +1,103 @@
+create_ami(1) -- create a machine image from a volume
+=====================================================
+
+## SYNOPSIS
+
+`create_ami` [<options>] `--attach-new-volume=`<instance_id><br>
+`create_ami` [<options>] `--create-image=`<image_name> `--volume-id=`<volume_id><br>
+`create_ami` [<options>] `--destroy-volume=`<volume_id><br>
+
+## DESCRIPTION
+
+**create_ami** handles the creation of a virtual machine image from an
+elastic block storage volume.
+
+In its first mode of operation, `create_ami` creates a new volume and attaches
+it to a virtual machine instance.
+
+In its second mode of operation, `create_ami` creates a machine image from an
+existing volume.
+
+In its third mode of operation, `create_ami` destroys the volume.
+
+`create_ami` requires a valid `boto` configuration file. See the
+[BOTO CONFIGURATION][] section for details.
+
+## OPTIONS
+
+One of these three options controlling the mode of operation is mandatory:
+
+  * `--attach-new-volume=`<instance_id>:
+    Create a new volume and attach it to the instance. On success `create_ami`
+    will print the `DEVICE` and `VOLUME_ID` shell variables to `stdout`.
+
+  * `--create-image=`<image_name>:
+    Create a machine image. On success `create_ami` will print the `IMAGE_ID`
+    shell variable to `stdout`.
+
+  * `--destroy-volume=`<volume_id>:
+    Detach the volume and destroy it.
+
+Volume creation options to be used with `--attach-new-volume`:
+
+  * `--volume-size=`<GiB>:
+    The size of the volume in gibibytes. The default is _10GiB_.
+
+  * `--volume-location=`<location>:
+    The location of the volume. The default is _eu-west-1a_.
+
+Image creation options to be used with `--create-image`:
+
+  * `--volume-id=`<volume_id>:
+    The volume used to create the machine image. This option is mandatory.
+
+  * `--image-description=`<description>:
+    Some text describing the image. Defaults to _None_.
+
+  * `--image-arch=`<arch>:
+    The machine architecture of the image. Defaults to _x86_64_.
+
+General options:
+
+  * `--tags=`<JSON>:
+    A dictionnary in JSON format, containg name/value pairs. These tags will be
+    added to the new volume or the new image. Defaults to _{}_.
+
+  * `--region=`<region>:
+    The EC2 region to use. Defaults to _eu-west-1_.
+
+  * `-v`, `--verbose`:
+    Print messages to the console. Use twice for more output.
+
+## BOTO CONFIGURATION
+
+`create_ami` uses the `boto` package to access the cloud. The following is a
+sample `~/.boto` configuration file:
+
+	[Credentials]
+	aws_access_key_id = <your access key>
+	aws_secret_access_key = <your secret key>
+
+	[Boto]
+	endpoints_path = /etc/outscale.json
+
+The following is a sample `/etc/outscale.json` file:
+
+	{
+		"ec2": {
+			"eu-west-1": "api.eu-west-1.outscale.com",
+			"eu-west-3": "api-ppd.outscale.com",
+			"us-east-1": "api.us-east-1.outscale.com"
+		}
+	}
+
+## USAGE EXAMPLE
+
+The following example shows how to use `create_ami` and `build_ami` to generate
+a Turnkey Linux appliance image:
+
+http://nodalink.github.io/outscale-image-factory/#docs/build
+
+## SEE ALSO
+
+build_ami(1)

@@ -1,0 +1,135 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CREATE_AMI" "1" "July 2014" "" ""
+.
+.SH "NAME"
+\fBcreate_ami\fR \- create a machine image from a volume
+.
+.SH "SYNOPSIS"
+\fBcreate_ami\fR [\fIoptions\fR] \fB\-\-attach\-new\-volume=\fR\fIinstance_id\fR
+.
+.br
+\fBcreate_ami\fR [\fIoptions\fR] \fB\-\-create\-image=\fR\fIimage_name\fR \fB\-\-volume\-id=\fR\fIvolume_id\fR
+.
+.br
+\fBcreate_ami\fR [\fIoptions\fR] \fB\-\-destroy\-volume=\fR\fIvolume_id\fR
+.
+.br
+.
+.SH "DESCRIPTION"
+\fBcreate_ami\fR handles the creation of a virtual machine image from an elastic block storage volume\.
+.
+.P
+In its first mode of operation, \fBcreate_ami\fR creates a new volume and attaches it to a virtual machine instance\.
+.
+.P
+In its second mode of operation, \fBcreate_ami\fR creates a machine image from an existing volume\.
+.
+.P
+In its third mode of operation, \fBcreate_ami\fR destroys the volume\.
+.
+.P
+\fBcreate_ami\fR requires a valid \fBboto\fR configuration file\. See the \fIBOTO CONFIGURATION\fR section for details\.
+.
+.SH "OPTIONS"
+One of these three options controlling the mode of operation is mandatory:
+.
+.TP
+\fB\-\-attach\-new\-volume=\fR\fIinstance_id\fR
+Create a new volume and attach it to the instance\. On success \fBcreate_ami\fR will print the \fBDEVICE\fR and \fBVOLUME_ID\fR shell variables to \fBstdout\fR\.
+.
+.TP
+\fB\-\-create\-image=\fR\fIimage_name\fR
+Create a machine image\. On success \fBcreate_ami\fR will print the \fBIMAGE_ID\fR shell variable to \fBstdout\fR\.
+.
+.TP
+\fB\-\-destroy\-volume=\fR\fIvolume_id\fR
+Detach the volume and destroy it\.
+.
+.P
+Volume creation options to be used with \fB\-\-attach\-new\-volume\fR:
+.
+.TP
+\fB\-\-volume\-size=\fR\fIGiB\fR
+The size of the volume in gibibytes\. The default is \fI10GiB\fR\.
+.
+.TP
+\fB\-\-volume\-location=\fR\fIlocation\fR
+The location of the volume\. The default is \fIeu\-west\-1a\fR\.
+.
+.P
+Image creation options to be used with \fB\-\-create\-image\fR:
+.
+.TP
+\fB\-\-volume\-id=\fR\fIvolume_id\fR
+The volume used to create the machine image\. This option is mandatory\.
+.
+.TP
+\fB\-\-image\-description=\fR\fIdescription\fR
+Some text describing the image\. Defaults to \fINone\fR\.
+.
+.TP
+\fB\-\-image\-arch=\fR\fIarch\fR
+The machine architecture of the image\. Defaults to \fIx86_64\fR\.
+.
+.P
+General options:
+.
+.TP
+\fB\-\-tags=\fR\fIJSON\fR
+A dictionnary in JSON format, containg name/value pairs\. These tags will be added to the new volume or the new image\. Defaults to \fI{}\fR\.
+.
+.TP
+\fB\-\-region=\fR\fIregion\fR
+The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print messages to the console\. Use twice for more output\.
+.
+.SH "BOTO CONFIGURATION"
+\fBcreate_ami\fR uses the \fBboto\fR package to access the cloud\. The following is a sample \fB~/\.boto\fR configuration file:
+.
+.IP "" 4
+.
+.nf
+
+[Credentials]
+aws_access_key_id = <your access key>
+aws_secret_access_key = <your secret key>
+
+[Boto]
+endpoints_path = /etc/outscale\.json
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The following is a sample \fB/etc/outscale\.json\fR file:
+.
+.IP "" 4
+.
+.nf
+
+{
+    "ec2": {
+        "eu\-west\-1": "api\.eu\-west\-1\.outscale\.com",
+        "eu\-west\-3": "api\-ppd\.outscale\.com",
+        "us\-east\-1": "api\.us\-east\-1\.outscale\.com"
+    }
+}
+.
+.fi
+.
+.IP "" 0
+.
+.SH "USAGE EXAMPLE"
+The following example shows how to use \fBcreate_ami\fR and \fBbuild_ami\fR to generate a Turnkey Linux appliance image:
+.
+.P
+http://nodalink\.github\.io/outscale\-image\-factory/#docs/build
+.
+.SH "SEE ALSO"
+build_ami(1)

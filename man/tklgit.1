@@ -1,0 +1,37 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "TKLGIT" "1" "July 2014" "" ""
+.
+.SH "NAME"
+\fBtklgit\fR \- generate list of Turnkey Linux appliance repositories
+.
+.SH "SYNOPSIS"
+\fBtklgit\fR \fIjson_input_filename\fR
+.
+.SH "DESCRIPTION"
+\fBtklgit\fR takes a JSON input file describing one or more github accounts and outputs a list of Turnkey Linux appliances in JSON format to \fBstdout\fR\.
+.
+.P
+For each appliance, \fBtklgit\fR outputs the name of the appliance, the URL of the git repository holding the appliance and the branch of the git repository\.
+.
+.P
+If the \fIjson_input_filename\fR is \fI\-\fR, then \fBtklgit\fR reads the JSON input file from \fBstdin\fR\.
+.
+.SH "USAGE EXAMPLE"
+.
+.nf
+
+$ tklgit /usr/local/share/tklgit_input\.json > output\.json
+$ cat output\.json
+[
+    "appengine\-go",
+    "https://api\.github\.com/repos/turnkeylinux\-apps/appengine\-go",
+    "master"
+],
+\.\.\.
+.
+.fi
+.
+.SH "SEE ALSO"
+build_ami(1)

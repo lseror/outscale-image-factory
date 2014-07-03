@@ -1,0 +1,28 @@
+create_fstab(1) -- create an fstab file
+=======================================
+
+## SYNOPSIS
+
+`create_fstab` <fstab_filename> <root_device>
+
+## DESCRIPTION
+
+**create_fstab** generates an fstab(5) file for a given root device.
+
+The first argument is the filename of the fstab to generate.
+
+The second argument is the root device that will be included in the generated
+fstab file.
+
+This command is typically used to generate an `/etc/fstab` file for a virtual machine.
+
+## USAGE EXAMPLE
+
+Generate an fstab(5) file for the rootfs mounted under `/mnt` using the `/dev/sdb`
+block device:
+
+	$ create_fstab /mnt/etc/fstab /dev/sdb
+
+## SEE ALSO
+
+fstab(5), blkid(8)

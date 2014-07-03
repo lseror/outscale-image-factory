@@ -1,0 +1,41 @@
+cleanup(1) -- remove stale EC2 objects
+======================================
+
+## SYNOPSIS
+
+`cleanup` [<options>] `--tags=`<JSON>
+
+## DESCRIPTION
+
+**cleanup** removes all EC2 objects tagged with one or several tags. `cleanup`
+is designed to cleanup after an automated build process but may be marginally
+useful on its own.
+
+## OPTIONS
+
+Mandatory options:
+
+  * `-t` <JSON>, `--tags=`<JSON>:
+    A dictionnary in JSON format, containg name/value pairs. Each EC2 object
+    matching at least one name/value pair will be destroyed.
+
+Miscellaneous options:
+
+  * `--region=`<region>:
+    The EC2 region to use. Defaults to _eu-west-1_.
+
+  * `-n`, `--dryrun`:
+    Go through each step of the cleanup process but do not actually perform them.
+
+  * `-v`, `--verbose`:
+    Print messages to the console. Use twice for more output.
+
+## EXAMPLES
+
+Remove all objects named _foobar_ or _foobaz_:
+
+    $ cleanup -v -v -t '{"name":"foobar","name":"foobaz"}'
+
+## SEE ALSO
+
+build_ami(1), create_ami(1)

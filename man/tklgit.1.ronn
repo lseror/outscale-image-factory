@@ -1,0 +1,32 @@
+tklgit(1) -- generate list of Turnkey Linux appliance repositories
+==================================================================
+
+## SYNOPSIS
+
+`tklgit` <json_input_filename>
+
+## DESCRIPTION
+
+**tklgit** takes a JSON input file describing one or more github accounts and
+outputs a list of Turnkey Linux appliances in JSON format to `stdout`.
+
+For each appliance, `tklgit` outputs the name of the appliance, the URL of the
+git repository holding the appliance and the branch of the git repository.
+
+If the <json_input_filename> is _-_, then `tklgit` reads the JSON input file
+from `stdin`.
+
+## USAGE EXAMPLE
+
+    $ tklgit /usr/local/share/tklgit_input.json > output.json
+	$ cat output.json
+    [
+        "appengine-go",
+        "https://api.github.com/repos/turnkeylinux-apps/appengine-go",
+        "master"
+    ],
+	...
+
+## SEE ALSO
+
+build_ami(1)

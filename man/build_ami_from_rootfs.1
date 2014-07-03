@@ -1,0 +1,66 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BUILD_AMI_FROM_ROOTFS" "1" "July 2014" "" ""
+.
+.SH "NAME"
+\fBbuild_ami_from_rootfs\fR \- copy filesystem to block device
+.
+.SH "SYNOPSIS"
+\fBbuild_ami_from_rootfs\fR [\fIoptions\fR] \fB\-\-rootfs=\fR\fIrootfs\fR \fB\-\-device=\fR\fIdevice\fR
+.
+.br
+.
+.SH "DESCRIPTION"
+\fBbuild_ami_from_rootfs\fR takes a fresh, unpartitionned block device, copies the content of a directory (the \fIrootfs\fR) to the device and makes the device bootable\.
+.
+.P
+This command must be run as \fBroot\fR\.
+.
+.P
+This command forms the basis of the build_ami(1) command\.
+.
+.SH "OPTIONS"
+Mandatory options:
+.
+.TP
+\fB\-r\fR \fIrootfs\fR, \fB\-\-rootfs=\fR\fIrootfs\fR
+The directory holding the root filesystem\.
+.
+.TP
+\fB\-d\fR \fIdevice\fR, \fB\-\-device=\fR\fIdevice\fR
+The block device onto which the filesystem will be copied\.
+.
+.P
+Directory options:
+.
+.TP
+\fB\-m\fR \fIdirectory\fR, \fB\-\-mount\-point=\fR\fIdirectory\fR
+The temporary mount point used to mount the block device\. The default is \fI/mnt\fR\.
+.
+.P
+Miscellaneous options:
+.
+.TP
+\fB\-n\fR, \fB\-\-dryrun\fR
+Go through each step of the build process but do not actually run any command\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print messages to the console\. Use twice for more output\.
+.
+.SH "EXAMPLES"
+Copy a new filesystem to \fB/dev/sdb\fR:
+.
+.IP "" 4
+.
+.nf
+
+$ build_ami_from_rootfs \-v \-\-rootfs=/tmp/my\.rootfs \-\-device=/dev/sdb
+.
+.fi
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+build_ami(1), create_ami(1)

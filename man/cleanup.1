@@ -1,0 +1,51 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CLEANUP" "1" "July 2014" "" ""
+.
+.SH "NAME"
+\fBcleanup\fR \- remove stale EC2 objects
+.
+.SH "SYNOPSIS"
+\fBcleanup\fR [\fIoptions\fR] \fB\-\-tags=\fR\fIJSON\fR
+.
+.SH "DESCRIPTION"
+\fBcleanup\fR removes all EC2 objects tagged with one or several tags\. \fBcleanup\fR is designed to cleanup after an automated build process but may be marginally useful on its own\.
+.
+.SH "OPTIONS"
+Mandatory options:
+.
+.TP
+\fB\-t\fR \fIJSON\fR, \fB\-\-tags=\fR\fIJSON\fR
+A dictionnary in JSON format, containg name/value pairs\. Each EC2 object matching at least one name/value pair will be destroyed\.
+.
+.P
+Miscellaneous options:
+.
+.TP
+\fB\-\-region=\fR\fIregion\fR
+The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dryrun\fR
+Go through each step of the cleanup process but do not actually perform them\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print messages to the console\. Use twice for more output\.
+.
+.SH "EXAMPLES"
+Remove all objects named \fIfoobar\fR or \fIfoobaz\fR:
+.
+.IP "" 4
+.
+.nf
+
+$ cleanup \-v \-v \-t \'{"name":"foobar","name":"foobaz"}\'
+.
+.fi
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+build_ami(1), create_ami(1)

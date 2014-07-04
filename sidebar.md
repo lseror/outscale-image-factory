@@ -3,6 +3,7 @@
 ## HOWTOs
 - [Bootstrap a factory](#docs/bootstrap)
 - [Build a TKL app](#docs/build)
+- [Create a Debian or Ubuntu image](#docs/debian)
 
 ## Manual pages
 - [build_ami.1](man/build_ami.1.html)

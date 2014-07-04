@@ -1,4 +1,4 @@
-# Bootstraping a Turnkey Linux factory on the Outscale cloud from scratch
+# Bootstraping a Turnkey Linux factory on the Outscale cloud
 
  1. Create a Linux instance. This example uses a Debian Squeeze instance. Attach a `20GB` volume named `/dev/sdb` to the instance.
 

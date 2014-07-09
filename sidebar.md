@@ -21,3 +21,4 @@
 - [outscale-image-factory](http://github.com/nodalink/outscale-image-factory)
 - [outscale-factory-master](http://github.com/nodalink/outscale-factory-master)
 - [outscale-factory-slave](http://github.com/nodalink/outscale-factory-slave)
+- [outscale-factory-buildbot](http://github.com/nodalink/outscale-factory-buildbot)

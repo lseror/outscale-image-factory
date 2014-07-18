@@ -1,49 +1,58 @@
 # Creating a Debian GNU/Linux or Ubuntu image on the Outscale cloud
 
- 1. Create a Linux instance. This examples uses a CentOS 6.5 instance. Attach a new volume named `/dev/sdb` to the instance.
+ 1. **Create a Linux instance.** This example uses **CentOS 6.5**.
 
- 2. Download the [image creation script](https://github.com/nodalink/outscale-image-factory/blob/master/scripts/create-debian-ami.sh) and make it executable:
-```
-wget https://raw.githubusercontent.com/nodalink/outscale-image-factory/master/scripts/create-debian-ami.sh
- chmod +x ./create-debian-ami.sh
-```
- 3. **Download the Debian or Ubuntu archive signing keys and copy them to your Linux instance**. You have several options to accomplish this step:
-      1. Download the Debian archive signing key from [ftp-master.debian.org](https://ftp-master.debian.org/keys.html). At the time of this writing the Debian archive signing key is named `2012/wheezy`.
-	  2. Download the Ubuntu archive signing key from some random source. This is probably a bad idea.
-      3. **Recommended option**: get the keys from an existing Debian or Ubuntu installation and copy them to your CentOS instance: 
-```
-apt-get install debian-archive-keyring ubuntu-archive-keyring
-scp /usr/share/keyrings/{debian-archive-keyring.gpg,ubuntu-archive-keyring.gpg} centos:
-```
+ 2. **Attach a new volume** named `/dev/sdb` to the instance.
+
+ 3. **Download the [image creation script](https://github.com/nodalink/outscale-image-factory/blob/master/scripts/create-debian-ami.sh)** and make it executable:
  
- 4. Run the image creation script.
+ ```
+ wget https://raw.githubusercontent.com/nodalink/outscale-image-factory/master/scripts/create-debian-ami.sh
+ chmod +x ./create-debian-ami.sh
+ ```
 
-	The following example creates a **Debian wheezy** image:
-```
-./create-debian-ami.sh \
-    /dev/sdb \
-    ./debian-archive-keyring.gpg \
-    amd64 \
-    wheezy \
-    http://ftp.fr.debian.org/debian
-```
+ 4. **Download the Debian or Ubuntu archive signing keys** and copy them to the instance:
+	1. **For Debian** the keys are available from [ftp-master.debian.org](https://ftp-master.debian.org/keys.html).
+	2. **For Ubuntu** the keys are available from the source package:
+	```
+	TGZ=ubuntu-keyring_2012.05.19.tar.gz
+	wget http://archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-keyring/$TGZ
+tar xvzf $TGZ
+	```
+	3. **Another option** is to get the keys from an existing Debian or Ubuntu installation and to copy them to the instance:
+	```
+	apt-get install debian-archive-keyring ubuntu-archive-keyring
+	scp /usr/share/keyrings/{debian-archive-keyring.gpg,ubuntu-archive-keyring.gpg} \
+	<centos_instance>:
+	```
 
-	The following example creates an **Ubuntu trusty** image:
-```
-./create-debian-ami.sh \
-    /dev/sdb \
-    ./ubuntu-archive-keyring.gpg \
-    amd64 \
-    trusty \
-    http://ubuntu-archive.mirrors.free.org/ubuntu/
-```
+ 5. **Install missing dependencies**. On **CentOS 6.5** install `git`, `parted` and `python33`. To install Python 3.3, install the [SCL](http://wiki.centos.org/AdditionalResources/Repositories/SCL) release file first:
 
- 5. On a fresh CentOS instance, the script will most likely complain about missing dependencies. Install the missing dependencies:
-```
-yum install -y centos-release-SCL
-yum install -y git parted python33
-```
+ ```
+ yum install -y git parted
+ yum install -y centos-release-SCL 
+ yum install -y python33
+ ```
+ 
+ 6. **Run the image creation script**.
+	1. For **Debian wheezy**:
+	```
+	./create-debian-ami.sh \
+	/dev/sdb \
+	./debian-archive-keyring.gpg \
+	amd64 \
+	wheezy \
+	http://ftp.fr.debian.org/debian
+	```
+	2. For **Ubuntu trusty**:
+	```
+	./create-debian-ami.sh \
+	/dev/sdb \
+	./ubuntu-keyring-2012.05.19/keyrings/ubuntu-archive-keyring.gpg \
+	amd64 \
+	trusty \
+	http://ubuntu-archive.mirrors.free.org/ubuntu/
+	```
+ 7. **Detach** the `/dev/sdb` volume.
 
- 6. Run the script again (*repeat step 4*) and grab some coffee.
-	 
- 7. Once the build process finishes, detach the `/dev/sdb` volume and convert it to a machine image.
+ 8. **Create an OMI** from the volume.

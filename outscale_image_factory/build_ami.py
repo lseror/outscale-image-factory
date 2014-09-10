@@ -95,8 +95,7 @@ def build_ami(dev, app, git, patch_dir,
 
 def clean(app, fab_dir, work_dir):
     """Clean everything."""
-    products_dir = '{}/products'.format(fab_dir)
-    app_dir = '{}/{}'.format(products_dir, app)
+    app_dir = os.path.join(fab_dir, 'products', app)
     rootfs_dir = '{}/product.rootfs'.format(work_dir)
     cdroot_dir = '{}/product.cdroot'.format(work_dir)
 

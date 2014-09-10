@@ -28,6 +28,14 @@ PATCH_LIST = ['headless', 'outscale']
 UMASK = 0o022
 
 
+def setup_environment(fab_dir):
+    logging.info('Setting up environment')
+    os.umask(UMASK)
+    os.environ.setdefault('FAB_PATH', fab_dir)
+    os.environ.setdefault('FAB_APT_PROXY', FAB_APT_PROXY)
+    os.environ.setdefault('FAB_HTTP_PROXY', FAB_HTTP_PROXY)
+
+
 def build_ami(dev, app, git, patch_dir,
               patch_list, fab_dir, work_dir, mnt_dir):
     """Build the image.
@@ -50,11 +58,6 @@ def build_ami(dev, app, git, patch_dir,
     rootfs_dir = '{}/product.rootfs'.format(work_dir)
 
     try:
-        logging.info('Setting up environment')
-        os.umask(UMASK)
-        os.environ.setdefault('FAB_PATH', fab_dir)
-        os.environ.setdefault('FAB_APT_PROXY', FAB_APT_PROXY)
-        os.environ.setdefault('FAB_HTTP_PROXY', FAB_HTTP_PROXY)
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
         os.makedirs(work_dir)
@@ -136,6 +139,8 @@ def main():
     if opt.verbose > 1:
         loglevel = logging.DEBUG
     logging.basicConfig(format='%(levelname)s:%(message)s', level=loglevel)
+
+    setup_environment(opt.fab_dir)
 
     ok = True
     if not opt.clean_only:

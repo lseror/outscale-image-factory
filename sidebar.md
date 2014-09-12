@@ -3,6 +3,7 @@
 ## HOWTOs
 - [Bootstrap a factory](#docs/bootstrap)
 - [Build a TKL app](#docs/build)
+- [Build and install a Buildbot](#docs/buildbot)
 - [Create a Debian or Ubuntu image](#docs/debian)
 
 ## Manual pages

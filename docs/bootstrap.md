@@ -65,6 +65,7 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  10. Cleanup:
  ```
  sync
+ cd /
  umount /mnt/boot
  umount /mnt/dev
  umount /mnt/proc

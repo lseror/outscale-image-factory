@@ -138,7 +138,9 @@ def main():
         loglevel = logging.INFO
     if opt.verbose > 1:
         loglevel = logging.DEBUG
-    logging.basicConfig(format='%(levelname)s:%(message)s', level=loglevel)
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=loglevel)
 
     setup_environment(opt.fab_dir)
 

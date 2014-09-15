@@ -11,38 +11,30 @@ def check_cmd(cmd, data='', dryrun=False):
     success and debug data."""
     logging.info(repr(cmd))
     if dryrun:
-        stderr = stdout = b''
         ret = 0
     else:
-        popen = subprocess.Popen(cmd.split(' '), stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(cmd.split(' '), stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if data:
-            stdout, stderr = popen.communicate(bytes(data, 'ascii'))
-        else:
-            stdout, stderr = popen.communicate()
-        ret = popen.wait()
+            proc.write(bytes(data, 'ascii'))
+        proc.stdin.close()
+        while proc.returncode is None:
+            line = proc.stdout.readline()
+            if line:
+                line = line.rstrip().decode(errors='replace')
+                logging.info('  ' + line)
+            proc.poll()
+        ret = proc.returncode
+    if ret != 0:
+        logging.error('Command finished with error code {}'.format(ret))
+    else:
+        logging.info('Command finished successfully')
     error = dict(
         cmd=cmd,
         stdin=data,
-        stdout=stdout.decode('utf-8', 'ignore'),
-        stderr=stderr.decode('utf-8', 'ignore'),
         ret=ret
     )
     ok = (ret == 0)
-    errstr = '''
-CMD={cmd}
-RET={ret}
-STDIN=
-{stdin}
-STDOUT=
-{stdout}
-STDERR=
-{stderr}
-'''.format(**error)
-    if ok:
-        logging.debug(errstr)
-    else:
-        logging.error(errstr)
     return ok, error
 
 

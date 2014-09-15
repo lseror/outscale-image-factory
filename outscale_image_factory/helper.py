@@ -10,6 +10,7 @@ def check_cmd(cmd, data='', dryrun=False):
     """Run command, log everything, return a (bool,dict) tuple with command
     success and debug data."""
     logging.info(repr(cmd))
+    stdout = ''
     if dryrun:
         ret = 0
     else:
@@ -21,8 +22,9 @@ def check_cmd(cmd, data='', dryrun=False):
         while proc.returncode is None:
             line = proc.stdout.readline()
             if line:
-                line = line.rstrip().decode(errors='replace')
-                logging.info('  ' + line)
+                line = line.decode(errors='replace')
+                stdout += line
+                logging.info('  ' + line.rstrip())
             proc.poll()
         ret = proc.returncode
     if ret != 0:
@@ -32,6 +34,7 @@ def check_cmd(cmd, data='', dryrun=False):
     error = dict(
         cmd=cmd,
         stdin=data,
+        stdout=stdout,
         ret=ret
     )
     ok = (ret == 0)

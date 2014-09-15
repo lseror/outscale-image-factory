@@ -9,7 +9,7 @@ import os
 def check_cmd(cmd, data='', dryrun=False):
     """Run command, log everything, return a (bool,dict) tuple with command
     success and debug data."""
-    logging.info(repr(cmd))
+    logging.info('Running {}'.format(repr(cmd)))
     stdout = ''
     if dryrun:
         ret = 0
@@ -28,9 +28,9 @@ def check_cmd(cmd, data='', dryrun=False):
             proc.poll()
         ret = proc.returncode
     if ret != 0:
-        logging.error('Command finished with error code {}'.format(ret))
+        logging.error('Command {} finished with error code {}'.format(repr(cmd), ret))
     else:
-        logging.info('Command finished successfully')
+        logging.info('Command {} finished successfully'.format(repr(cmd)))
     error = dict(
         cmd=cmd,
         stdin=data,

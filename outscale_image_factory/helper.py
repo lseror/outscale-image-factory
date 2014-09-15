@@ -16,7 +16,7 @@ def check_cmd(cmd, data='', dryrun=False):
         proc = subprocess.Popen(cmd.split(' '), stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if data:
-            proc.write(bytes(data, 'ascii'))
+            proc.stdin.write(bytes(data, 'ascii'))
         proc.stdin.close()
         while proc.returncode is None:
             line = proc.stdout.readline()

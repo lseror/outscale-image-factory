@@ -44,9 +44,17 @@ Creating a Buildbot from scratch can be done by following these steps:
     aws_secret_access_key = <secret>
     ```
 
-`<name>` and `<secret>` come from the Outscale account profile. They are listed as "Access Keys" in the "Security" section.
+    `<name>` and `<secret>` come from the Outscale account profile. They are listed as "Access Keys" in the "Security" section.
 
-4. The web interface should be available on port 8010.
+4. The Buildbot configuration requires an authenticated user to trigger builds. Add a user with:
+
+    ```
+    htpasswd -d /etc/outscale-factory-master/htpasswd <username>
+    ```
+
+    (The `-d` switch tells `htpasswd` to use CRYPT encryption, the only supported encryption in Buildbot 0.8.6p1)
+
+The web interface should be available on port 8010.
 
 ### Instantiating a Slave
 

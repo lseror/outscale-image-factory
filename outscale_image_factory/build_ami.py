@@ -36,6 +36,20 @@ def setup_environment(fab_dir):
     os.environ.setdefault('FAB_HTTP_PROXY', FAB_HTTP_PROXY)
 
 
+def _clone_or_update(repo, products_dir, app):
+    app_dir = '{}/{}'.format(products_dir, app)
+    if os.path.exists(app_dir):
+        logging.info('Updating {}'.format(app))
+        ok, err = cd(app_dir)
+        if ok:
+            ok, err = check_cmd('git pull')
+    else:
+        logging.info('Cloning {}'.format(app))
+        cd(products_dir)
+        ok, err = check_cmd('git clone {}'.format(repo))
+    return ok, err
+
+
 def build_ami(dev, app, git, patch_dir,
               patch_list, fab_dir, work_dir, mnt_dir):
     """Build the image.
@@ -49,11 +63,10 @@ def build_ami(dev, app, git, patch_dir,
     work_dir: directory used to extract the rootfs and apply patches
     mnt_dir: directory used to mount the target filesystem
     """
+    core_repo = '{}/core.git'.format(TURNKEY_APPS_GIT)
     repo = '{}/{}'.format(git, app)
     products_dir = '{}/products'.format(fab_dir)
     app_dir = '{}/{}'.format(products_dir, app)
-    core_app_dir = '{}/core'.format(products_dir)
-    core_repo = '{}/core.git'.format(TURNKEY_APPS_GIT)
     product_iso = '{}/build/product.iso'.format(app_dir)
     rootfs_dir = '{}/product.rootfs'.format(work_dir)
 
@@ -69,13 +82,9 @@ def build_ami(dev, app, git, patch_dir,
         ok = False
 
     if ok:
-        ok, err = cd(products_dir)
-    if ok and not os.path.exists(core_app_dir):
-        logging.info('Cloning {}'.format(core_repo))
-        ok, err = check_cmd('git clone {}'.format(core_repo))
-    if ok and not os.path.exists(app_dir):
-        logging.info('Cloning {}'.format(repo))
-        ok, err = check_cmd('git clone {}'.format(repo))
+        ok, err = _clone_or_update(core_repo, products_dir, 'core')
+    if ok:
+        ok, err = _clone_or_update(repo, products_dir, app)
     if ok:
         logging.info('Building product {}'.format(app))
         ok, err = cd(app_dir)

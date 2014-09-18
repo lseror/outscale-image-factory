@@ -59,6 +59,7 @@ def build_ami(dev, app, git, patch_dir,
 
     try:
         if os.path.exists(work_dir):
+            logging.info('Removing work dir {}'.format(work_dir))
             shutil.rmtree(work_dir)
         os.makedirs(work_dir)
         if not os.path.exists(mnt_dir):

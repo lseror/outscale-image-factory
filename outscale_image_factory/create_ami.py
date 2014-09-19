@@ -25,6 +25,11 @@ AVAILABLE = 'available'
 STOPPED = 'stopped'
 RUNNING = 'running'
 
+# Snaphost status strings
+SNAPSHOT_PENDING = 'pending'
+SNAPSHOT_ERROR = 'error'
+SNAPSHOT_COMPLETED = 'completed'
+
 # Defaults
 REGION = 'eu-west-1'
 BUILD_VOLUME_SIZE_GIB = 10
@@ -242,6 +247,7 @@ def create_image(conn, image_name, volume_id,
         logging.info('Creating snapshot from volume ' + volume_id)
         snapshot = volume.create_snapshot('Backing image {} created from volume {}'
                                           .format(repr(image_name), volume_id))
+        _wait_for(snapshot, SNAPSHOT_COMPLETED)
         snapshot_id = snapshot.id
         _tag(conn, snapshot_id, tags)
 

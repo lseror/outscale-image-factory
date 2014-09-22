@@ -10,34 +10,39 @@ def check_cmd(cmd, data='', dryrun=False):
     """Run command, log everything, return a (bool,dict) tuple with command
     success and debug data."""
     logging.info('Running {}'.format(repr(cmd)))
-    stdout = ''
     if dryrun:
+        stderr = stdout = b''
         ret = 0
     else:
-        proc = subprocess.Popen(cmd.split(' '), stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        popen = subprocess.Popen(cmd.split(' '), stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if data:
-            proc.stdin.write(bytes(data, 'ascii'))
-        proc.stdin.close()
-        while proc.returncode is None:
-            line = proc.stdout.readline()
-            if line:
-                line = line.decode(errors='replace')
-                stdout += line
-                logging.info('  ' + line.rstrip())
-            proc.poll()
-        ret = proc.returncode
-    if ret != 0:
-        logging.error('Command {} finished with error code {}'.format(repr(cmd), ret))
-    else:
-        logging.info('Command {} finished successfully'.format(repr(cmd)))
+            stdout, stderr = popen.communicate(bytes(data, 'ascii'))
+        else:
+            stdout, stderr = popen.communicate()
+        ret = popen.wait()
     error = dict(
         cmd=cmd,
         stdin=data,
-        stdout=stdout,
+        stdout=stdout.decode('utf-8', 'ignore'),
+        stderr=stderr.decode('utf-8', 'ignore'),
         ret=ret
     )
     ok = (ret == 0)
+    errstr = '''
+CMD={cmd}
+RET={ret}
+STDIN=
+{stdin}
+STDOUT=
+{stdout}
+STDERR=
+{stderr}
+'''.format(**error)
+    if ok:
+        logging.debug(errstr)
+    else:
+        logging.error(errstr)
     return ok, error
 
 

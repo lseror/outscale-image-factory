@@ -54,6 +54,8 @@ Creating a Buildbot from scratch can be done by following these steps:
 
     (The `-d` switch tells `htpasswd` to use CRYPT encryption, the only supported encryption in Buildbot 0.8.6p1)
 
+5. Restart Buildbot with `invoke-rc.d buildmaster restart` (so that the changes to Boto credentials are taken into account)
+
 The web interface should be available on port 8010.
 
 ### Instantiating a Slave

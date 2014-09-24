@@ -106,6 +106,31 @@ def build_ami(dev, app, git, patch_dir,
     return ok, err
 
 
+def cmd_tkl_build(args):
+    setup_environment(args.fab_dir)
+    ok, _ = build_ami(args.device,
+                      args.app,
+                      args.turnkey_apps_git,
+                      args.patch_dir,
+                      PATCH_LIST + args.add_tklpatch,
+                      args.fab_dir,
+                      args.work_dir,
+                      args.mount_point)
+    return ok
+
+
+def parser_tkl_build(parser):
+    parser.description = 'Build a TKL appliance'
+    parser.add_argument('app')
+    parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
+    parser.add_argument('-w', '--work-dir', default=WORK_DIR)
+    parser.add_argument('-d', '--device')
+    parser.add_argument('-g', '--turnkey-apps-git', default=TURNKEY_APPS_GIT)
+    parser.add_argument('-p', '--patch-dir', default=PATCH_DIR)
+    parser.add_argument('-m', '--mount-point', default=MNT_DIR)
+    parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
+
+
 def clean(app, fab_dir, work_dir):
     """Clean everything."""
     app_dir = os.path.join(fab_dir, 'products', app)
@@ -117,6 +142,19 @@ def clean(app, fab_dir, work_dir):
     cd(app_dir)
     check_cmd('deck -D build/root.tmp')
     check_cmd('make clean')
+
+
+def cmd_tkl_clean(args):
+    setup_environment(args.fab_dir)
+    clean(args.app, args.fab_dir, args.work_dir)
+    return True
+
+
+def parser_tkl_clean(parser):
+    parser.description = 'Clean TKL build dirs'
+    parser.add_argument('app')
+    parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
+    parser.add_argument('-w', '--work-dir', default=WORK_DIR)
 
 
 def main():

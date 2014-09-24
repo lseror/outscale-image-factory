@@ -5,7 +5,7 @@ Create a VM image from a build volume.
 Written in Python 2 to integrate with Buildbot and Boto.
 """
 import time
-import optparse
+import types
 import logging
 import sys
 import json
@@ -13,12 +13,9 @@ import json
 import boto.ec2
 import boto.exception
 
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-USAGE = '''
-{0} -v --attach INSTANCE_ID
-{0} -v --create IMAGE_NAME --volume-id VOLUME_ID
-{0} -v --destroy VOLUME_ID
-'''.format(sys.argv[0])
+import build_ami
 
 # Status strings
 AVAILABLE = 'available'
@@ -187,6 +184,30 @@ def attach_new_volume(conn, instance_id, volume_size_gib, volume_location,
     return volume_id, device, error
 
 
+def cmd_create_volume(args):
+    tags = json.loads(args.tags)
+    conn = boto.ec2.connect_to_region(args.region)
+    volume_id, device, error = attach_new_volume(conn,
+                                                 args.instance_id,
+                                                 args.volume_size,
+                                                 args.volume_location,
+                                                 tags)
+
+    if error is None:
+        sys.stdout.write('VOLUME_ID={}\nDEVICE={}\n' .format(volume_id, device))
+    return error is None
+
+
+def parser_create_volume(parser):
+    parser.description = 'Create and attach a new volume'
+    parser.add_argument('instance_id', metavar='INSTANCE_ID')
+    parser.add_argument( '--volume-size', metavar='GiB',
+                        default=BUILD_VOLUME_SIZE_GIB)
+    parser.add_argument('--volume-location', default=BUILD_VOLUME_LOCATION)
+    parser.add_argument('--region', default=REGION)
+    parser.add_argument('--tags', metavar='JSON', default='{}')
+
+
 def detach_volume(conn, volume_id):
     """
     Detach volume from buildslave.
@@ -285,6 +306,29 @@ def create_image(conn, image_name, volume_id,
     return image_id, error
 
 
+def cmd_create_image(args):
+    tags = json.loads(args.tags)
+    conn = boto.ec2.connect_to_region(args.region)
+    ok, _ = detach_volume(conn, args.volume_id)
+    if not ok:
+        return False
+    image_id, error = create_image(conn, args.image_name, args.volume_id,
+                                   args.image_arch,
+                                   args.image_description,
+                                   tags)
+    return error is None
+
+
+def parser_create_image(parser):
+    parser.description = 'Create an AMI from an existing volume'
+    parser.add_argument('image_name', metavar='IMAGE_NAME', default=None)
+    parser.add_argument('--volume-id', default=None)
+    parser.add_argument('--image-description', default=None)
+    parser.add_argument('--image-arch', default=IMAGE_ARCH)
+    parser.add_argument('--region', default=REGION)
+    parser.add_argument('--tags', metavar='JSON', default='{}')
+
+
 def destroy_volume(conn, volume_id):
     """
     Destroy build volume.
@@ -318,81 +362,92 @@ def destroy_volume(conn, volume_id):
     return ok, error
 
 
-def main():
-    """CLI for Testing."""
+def cmd_destroy_volume(args):
+    conn = boto.ec2.connect_to_region(args.region)
+    ok, _ = destroy_volume(conn, args.volume_id)
+    return ok
 
-    parser = optparse.OptionParser(usage=USAGE)
-    # attach
-    parser.add_option(
-        '--attach-new-volume',
-        metavar='INSTANCE_ID',
-        default=None)
-    parser.add_option(
-        '--volume-size', metavar='GiB', default=BUILD_VOLUME_SIZE_GIB)
-    parser.add_option('--volume-location', default=BUILD_VOLUME_LOCATION)
-    # create
-    parser.add_option('--create-image', metavar='IMAGE_NAME', default=None)
-    parser.add_option('--volume-id', default=None)
-    parser.add_option('--image-description', default=None)
-    parser.add_option('--image-arch', default=IMAGE_ARCH)
-    parser.add_option('--region', default=REGION)
-    # destroy
-    parser.add_option('--destroy-volume', metavar='VOLUME_ID', default=None)
-    # general
-    parser.add_option('--tags', metavar='JSON', default='{}')
-    parser.add_option(
+
+def parser_destroy_volume(parser):
+    parser.description = 'Destroy an existing volume'
+    parser.add_argument('volume_id', metavar='VOLUME_ID')
+    parser.add_argument('--region', default=REGION)
+
+
+def cmd_help(args):
+    if args.command:
+        main([args.command, '--help'])
+    else:
+        main(['--help'])
+    return True
+
+
+def parser_help(parser):
+    parser.description = 'Describe a command'
+    parser.add_argument('command', nargs='?',
+                        metavar='COMMAND')
+
+
+def add_commands(subparsers, module_or_dict):
+    lst = []
+    if isinstance(module_or_dict, types.ModuleType):
+        dct = module_or_dict.__dict__
+    else:
+        dct = module_or_dict
+    for attr in dct:
+        if not attr.startswith('cmd_'):
+            continue
+        cmd_func = dct[attr]
+        func_name = attr[4:]
+        init_parser_func = dct['parser_' + func_name]
+
+        cmd_name = func_name.replace('_', '-')
+        subparser = subparsers.add_parser(cmd_name)
+        init_parser_func(subparser)
+        subparser.set_defaults(func=cmd_func)
+        lst.append((cmd_name, subparser.description))
+    return lst
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    parser = ArgumentParser(
+        formatter_class=RawDescriptionHelpFormatter)
+    subparsers = parser.add_subparsers(dest='commands',
+                                       title='Available commands')
+
+    lst = add_commands(subparsers, globals())
+    lst += add_commands(subparsers, build_ami)
+
+    parser.epilog = '\n'.join(['  {:21} {}'.format(x, y) for x, y in lst])
+    parser.add_argument(
         '-v',
         '--verbose',
         action='count',
         default=0,
         help='use twice for debug output')
 
-    opt, _ = parser.parse_args()
-    if not (opt.attach_new_volume or opt.create_image or opt.destroy_volume) \
-            or (opt.create_image and not opt.volume_id):
-        parser.print_help()
-        sys.exit(1)
+    if len(argv) < 1:
+        argv.append('--help')
+    args = parser.parse_args(argv)
 
+    # Init log
     loglevel = boto_loglevel = logging.WARNING
-    if opt.verbose > 0:
+    if args.verbose > 0:
         loglevel = boto_loglevel = logging.INFO
-    if opt.verbose > 1:
+    if args.verbose > 1:
         loglevel = logging.DEBUG
-    if opt.verbose > 2:
+    if args.verbose > 2:
         boto_loglevel = loglevel
     logging.basicConfig(format='%(levelname)s:%(message)s', level=loglevel)
     logging.getLogger('boto').setLevel(boto_loglevel)
 
-    conn = boto.ec2.connect_to_region(opt.region)
-
-    if opt.attach_new_volume:
-        instance_id = opt.attach_new_volume
-        volume_id, device, error = attach_new_volume(
-            conn,
-            instance_id,
-            opt.volume_size,
-            opt.volume_location,
-            json.loads(opt.tags))
-        if not error:
-            sys.stdout.write('VOLUME_ID={}\nDEVICE={}\n'
-                             .format(volume_id, device))
-
-    if opt.create_image:
-        image_name = opt.create_image
-        detach_volume(conn, opt.volume_id)
-        image_id, error = create_image(
-            conn,
-            image_name,
-            opt.volume_id,
-            image_description=opt.image_description,
-            image_arch=opt.image_arch,
-            tags=json.loads(opt.tags))
-        if not error:
-            sys.stdout.write('IMAGE_ID={}\n'.format(image_id))
-
-    if opt.destroy_volume:
-        destroy_volume(conn, opt.destroy_volume)
+    # Run command
+    ok = args.func(args)
+    return 0 if ok else 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

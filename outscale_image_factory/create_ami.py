@@ -425,23 +425,18 @@ def main(argv=None):
     parser.add_argument(
         '-v',
         '--verbose',
-        action='count',
-        default=0,
-        help='use twice for debug output')
+        action='store_true',
+        help='Turn on debug output')
 
     if len(argv) < 1:
         argv.append('--help')
     args = parser.parse_args(argv)
 
     # Init log
-    loglevel = boto_loglevel = logging.WARNING
-    if args.verbose > 0:
-        loglevel = boto_loglevel = logging.INFO
-    if args.verbose > 1:
-        loglevel = logging.DEBUG
-    if args.verbose > 2:
-        boto_loglevel = loglevel
-    logging.basicConfig(format='%(levelname)s:%(message)s', level=loglevel)
+    loglevel = boto_loglevel = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=loglevel)
     logging.getLogger('boto').setLevel(boto_loglevel)
 
     # Run command

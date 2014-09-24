@@ -6,6 +6,7 @@ import os
 import sys
 import logging
 import optparse
+import tempfile
 import time
 
 from outscale_image_factory.helper import check_cmd
@@ -51,13 +52,12 @@ def _sfdisk_part_table(dev, spec):
     return '\n'.join(lines) + '\n'
 
 
-def build_ami_from_rootfs(dev, rootfs, mnt, dryrun=False, partno=1):
+def build_ami_from_rootfs(dev, rootfs, dryrun=False, partno=1):
     """
     Copy rootfs to block device, install grub.
 
     dev: block device path
     rootfs: directory containing root filesystem.
-    mnt: temporary mount point
 
     Return (ok, error) tuple.
     """
@@ -70,6 +70,9 @@ def build_ami_from_rootfs(dev, rootfs, mnt, dryrun=False, partno=1):
     rootfs = rootfs.rstrip('/')
     part = dev + str(partno)
     parttable = _sfdisk_part_table(dev, PARTITION_TABLE)
+
+    mnt = tempfile.mkdtemp('-outscale-mnt')
+
     script = [
         ['Partitionning {}'.format(dev),
          'sfdisk --force {}'.format(dev),
@@ -100,21 +103,24 @@ def build_ami_from_rootfs(dev, rootfs, mnt, dryrun=False, partno=1):
     ]
 
     ok = True
-    while script and ok:
-        lst = script.pop(0)
-        msg, cmd = lst[:2]
-        data = ''
-        if len(lst) == 3:
-            data = lst[2]
-        if msg:
-            logging.info(msg)
-        ok, err = check_cmd(cmd, data, dryrun)
-
-    logging.info('Cleaning up')
-    check_cmd('umount {}/dev'.format(mnt), dryrun=dryrun)
-    check_cmd('umount {}/proc'.format(mnt), dryrun=dryrun)
-    check_cmd('umount {}/sys'.format(mnt), dryrun=dryrun)
-    check_cmd('umount {}'.format(part), dryrun=dryrun)
+    try:
+        while script and ok:
+            lst = script.pop(0)
+            msg, cmd = lst[:2]
+            data = ''
+            if len(lst) == 3:
+                data = lst[2]
+            if msg:
+                logging.info(msg)
+            ok, err = check_cmd(cmd, data, dryrun)
+    finally:
+        logging.info('Unmounting')
+        check_cmd('umount {}/dev'.format(mnt), dryrun=dryrun)
+        check_cmd('umount {}/proc'.format(mnt), dryrun=dryrun)
+        check_cmd('umount {}/sys'.format(mnt), dryrun=dryrun)
+        check_cmd('umount {}'.format(part), dryrun=dryrun)
+        logging.info('Removing {}'.format(mnt))
+        os.rmdir(mnt)
     return ok, err
 
 
@@ -123,7 +129,6 @@ def main():
     parser = optparse.OptionParser(usage=USAGE)
     parser.add_option('-r', '--rootfs')
     parser.add_option('-d', '--device')
-    parser.add_option('-m', '--mountpoint', default='/mnt')
     parser.add_option(
         '-v',
         '--verbose',
@@ -151,7 +156,6 @@ def main():
     ok, error = build_ami_from_rootfs(
         opt.device,
         opt.rootfs,
-        opt.mountpoint,
         opt.dryrun)
     if not ok:
         logging.error(repr(error))

@@ -7,6 +7,7 @@ import logging
 import optparse
 import sys
 import shutil
+import tempfile
 
 from outscale_image_factory.helper import check_cmd, cd
 from outscale_image_factory.build_ami_from_rootfs import build_ami_from_rootfs
@@ -50,8 +51,44 @@ def _clone_or_update(repo, products_dir, app):
     return ok, err
 
 
-def build_ami(dev, app, git, patch_dir,
-              patch_list, fab_dir, work_dir, mnt_dir):
+def install_iso(dev, product_iso, patch_dir, patch_list):
+    work_dir = tempfile.mkdtemp(suffix='-outscale-work')
+    cd(work_dir)
+    try:
+        logging.info('Extracting iso in {}'.format(work_dir))
+        ok, err = check_cmd('tklpatch-extract-iso {}'.format(product_iso))
+        if ok:
+            logging.info('Patching product'.format(work_dir))
+            rootfs_dir = '{}/product.rootfs'.format(work_dir)
+            for patch in patch_list:
+                ok, err = check_cmd(
+                    'tklpatch-apply {} {}/{}'.format(rootfs_dir, patch_dir, patch))
+                if not ok:
+                    break
+        ok, err = build_ami_from_rootfs(dev, rootfs_dir)
+    finally:
+        logging.info('Deleting {}'.format(work_dir))
+        shutil.rmtree(work_dir)
+    return ok, err
+
+
+def cmd_install_iso(args):
+    ok, _ = install_iso(args.device,
+                        args.iso,
+                        args.patch_dir,
+                        PATCH_LIST + args.add_tklpatch)
+    return ok
+
+
+def parser_install_iso(parser):
+    parser.description = 'Install a system from an ISO file to a device'
+    parser.add_argument('iso')
+    parser.add_argument('-d', '--device')
+    parser.add_argument('-p', '--patch-dir', default=PATCH_DIR)
+    parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
+
+
+def build_ami(dev, app, git, patch_dir, patch_list, fab_dir):
     """Build the image.
 
     dev: target block device
@@ -60,26 +97,12 @@ def build_ami(dev, app, git, patch_dir,
     patch_dir: directory holding the patches applied by tklpatch
     patch_list: list of patches applied by tklpatch
     fab_dir: turnkey build directory
-    work_dir: directory used to extract the rootfs and apply patches
-    mnt_dir: directory used to mount the target filesystem
     """
     core_repo = '{}/core.git'.format(TURNKEY_APPS_GIT)
     repo = '{}/{}'.format(git, app)
     products_dir = '{}/products'.format(fab_dir)
     app_dir = '{}/{}'.format(products_dir, app)
     product_iso = '{}/build/product.iso'.format(app_dir)
-    rootfs_dir = '{}/product.rootfs'.format(work_dir)
-
-    try:
-        if os.path.exists(work_dir):
-            logging.info('Removing work dir {}'.format(work_dir))
-            shutil.rmtree(work_dir)
-        os.makedirs(work_dir)
-        if not os.path.exists(mnt_dir):
-            os.makedirs(mnt_dir)
-        ok = True
-    except Exception as err:
-        ok = False
 
     if ok:
         ok, err = _clone_or_update(core_repo, products_dir, 'core')
@@ -91,18 +114,7 @@ def build_ami(dev, app, git, patch_dir,
     if ok:
         ok, err = check_cmd('make')
     if ok:
-        logging.info('Patching product ')
-        ok, err = cd(work_dir)
-    if ok:
-        ok, err = check_cmd('tklpatch-extract-iso {}'.format(product_iso))
-    if ok:
-        for patch in patch_list:
-            ok, err = check_cmd(
-                'tklpatch-apply {} {}/{}'.format(rootfs_dir, patch_dir, patch))
-            if not ok:
-                break
-    if ok:
-        ok, err = build_ami_from_rootfs(dev, rootfs_dir, mnt_dir)
+        ok, err = install_iso(dev, product_iso, patch_dir, patch_list)
     return ok, err
 
 
@@ -113,9 +125,7 @@ def cmd_tkl_build(args):
                       args.turnkey_apps_git,
                       args.patch_dir,
                       PATCH_LIST + args.add_tklpatch,
-                      args.fab_dir,
-                      args.work_dir,
-                      args.mount_point)
+                      args.fab_dir)
     return ok
 
 
@@ -123,11 +133,9 @@ def parser_tkl_build(parser):
     parser.description = 'Build a TKL appliance'
     parser.add_argument('app')
     parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
-    parser.add_argument('-w', '--work-dir', default=WORK_DIR)
     parser.add_argument('-d', '--device')
     parser.add_argument('-g', '--turnkey-apps-git', default=TURNKEY_APPS_GIT)
     parser.add_argument('-p', '--patch-dir', default=PATCH_DIR)
-    parser.add_argument('-m', '--mount-point', default=MNT_DIR)
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
@@ -165,7 +173,6 @@ def main():
     parser.add_option('-g', '--turnkey-apps-git', default=TURNKEY_APPS_GIT)
     parser.add_option('-p', '--patch-dir', default=PATCH_DIR)
     parser.add_option('-f', '--fab-dir', default=FAB_PATH)
-    parser.add_option('-m', '--mount-point', default=MNT_DIR)
     parser.add_option('-w', '--work-dir', default=WORK_DIR)
     parser.add_option('-b', '--build-only', action='store_true', default=False)
     parser.add_option('-c', '--clean-only', action='store_true', default=False)

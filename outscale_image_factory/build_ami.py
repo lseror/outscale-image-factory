@@ -106,8 +106,7 @@ def build_ami(dev, app, git, patch_dir, patch_list, fab_dir):
     app_dir = '{}/{}'.format(products_dir, app)
     product_iso = '{}/build/product.iso'.format(app_dir)
 
-    if ok:
-        ok, err = _clone_or_update(core_repo, products_dir, 'core')
+    ok, err = _clone_or_update(core_repo, products_dir, 'core')
     if ok:
         ok, err = _clone_or_update(repo, products_dir, app)
     if ok:

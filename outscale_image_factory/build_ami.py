@@ -52,6 +52,7 @@ def _clone_or_update(repo, products_dir, app):
 
 
 def install_iso(dev, product_iso, patch_dir, patch_list):
+    product_iso = os.path.abspath(product_iso)
     work_dir = tempfile.mkdtemp(suffix='-outscale-work')
     cd(work_dir)
     try:

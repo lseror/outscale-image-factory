@@ -23,8 +23,6 @@ PATCH_DIR = '/usr/local/share/tklpatch'
 FAB_PATH = '/turnkey/fab'
 FAB_APT_PROXY = 'http://127.0.0.1:8124'
 FAB_HTTP_PROXY = 'http://127.0.0.1:8124'
-MNT_DIR = '/mnt'
-WORK_DIR = '/tmp'
 PATCH_LIST = ['headless', 'outscale']
 UMASK = 0o022
 
@@ -140,14 +138,11 @@ def parser_tkl_build(parser):
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
-def clean(app, fab_dir, work_dir):
+def clean(app, fab_dir):
     """Clean everything."""
     app_dir = os.path.join(fab_dir, 'products', app)
-    rootfs_dir = '{}/product.rootfs'.format(work_dir)
-    cdroot_dir = '{}/product.cdroot'.format(work_dir)
 
     logging.info('Cleaning up')
-    check_cmd('rm -rf {} {}'.format(rootfs_dir, cdroot_dir))
     cd(app_dir)
     check_cmd('deck -D build/root.tmp')
     check_cmd('make clean')
@@ -155,7 +150,7 @@ def clean(app, fab_dir, work_dir):
 
 def cmd_tkl_clean(args):
     setup_environment(args.fab_dir)
-    clean(args.app, args.fab_dir, args.work_dir)
+    clean(args.app, args.fab_dir)
     return True
 
 
@@ -163,7 +158,6 @@ def parser_tkl_clean(parser):
     parser.description = 'Clean TKL build dirs'
     parser.add_argument('app')
     parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
-    parser.add_argument('-w', '--work-dir', default=WORK_DIR)
 
 
 def main():
@@ -174,7 +168,6 @@ def main():
     parser.add_option('-g', '--turnkey-apps-git', default=TURNKEY_APPS_GIT)
     parser.add_option('-p', '--patch-dir', default=PATCH_DIR)
     parser.add_option('-f', '--fab-dir', default=FAB_PATH)
-    parser.add_option('-w', '--work-dir', default=WORK_DIR)
     parser.add_option('-b', '--build-only', action='store_true', default=False)
     parser.add_option('-c', '--clean-only', action='store_true', default=False)
     parser.add_option('-t', '--add-tklpatch', action='append', default=[])
@@ -207,11 +200,9 @@ def main():
                           opt.turnkey_apps_git,
                           opt.patch_dir,
                           PATCH_LIST + opt.add_tklpatch,
-                          opt.fab_dir,
-                          opt.work_dir,
-                          opt.mount_point)
+                          opt.fab_dir)
     if not opt.build_only:
-        clean(opt.turnkey_app, opt.fab_dir, opt.work_dir)
+        clean(opt.turnkey_app, opt.fab_dir)
 
     sys.exit(0 if ok else 1)
 

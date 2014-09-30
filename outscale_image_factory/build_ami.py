@@ -66,7 +66,8 @@ def install_iso(dev, product_iso, patch_dir, patch_list):
                     'tklpatch-apply {} {}/{}'.format(rootfs_dir, patch_dir, patch))
                 if not ok:
                     break
-        ok, err = build_ami_from_rootfs(dev, rootfs_dir)
+        if ok:
+            ok, err = build_ami_from_rootfs(dev, rootfs_dir)
     finally:
         logging.info('Deleting {}'.format(work_dir))
         shutil.rmtree(work_dir)

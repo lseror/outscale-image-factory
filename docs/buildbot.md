@@ -46,7 +46,9 @@ Creating a Buildbot from scratch can be done by following these steps:
 
     `<name>` and `<secret>` come from the Outscale account profile. They are listed as "Access Keys" in the "Security" section.
 
-4. The Buildbot configuration requires an authenticated user to trigger builds. Add a user with:
+4. Edit `/etc/outscale-factory-master/user.json` and set the marketplace configuration (`baseurl`, `username`, `password`)
+
+5. The Buildbot configuration requires an authenticated user to trigger builds. Add a user with:
 
     ```
     htpasswd -d /etc/outscale-factory-master/htpasswd <username>
@@ -54,7 +56,7 @@ Creating a Buildbot from scratch can be done by following these steps:
 
     (The `-d` switch tells `htpasswd` to use CRYPT encryption, the only supported encryption in Buildbot 0.8.6p1)
 
-5. Restart Buildbot with `invoke-rc.d buildmaster restart` (so that the changes to Boto credentials are taken into account)
+6. Restart Buildbot with `invoke-rc.d buildmaster restart` (so that the changes to Boto credentials are taken into account)
 
 The web interface should be available on port 8010.
 

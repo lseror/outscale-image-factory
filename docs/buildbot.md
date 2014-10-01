@@ -46,7 +46,32 @@ Creating a Buildbot from scratch can be done by following these steps:
 
     `<name>` and `<secret>` come from the Outscale account profile. They are listed as "Access Keys" in the "Security" section.
 
-4. Edit `/etc/outscale-factory-master/user.json` and set the marketplace configuration (`baseurl`, `username`, `password`)
+4. Buildbot needs to know which appliances to build. If you have a Marketplace server, edit `/etc/outscale-factory-master/user.json` and add the following entries:
+
+    ```
+    "marketplace": {
+        "baseurl": "http://example.com",
+        "username": "jdoe",
+        "password": "secret"
+    },
+    ```
+
+    If you don't have a Marketplace server, create `/srv/outscale-factory-master/tklgit.json` and list the appliances in there. The file must contain a list of `<appliance-name>`, `<git-repository-url>`, `<git-branch>` triplets, like this:
+
+    ```
+    [
+        [
+            "foo",
+            "https://example.com/git/foo.git",
+            "master"
+        ],
+        [
+            "bar",
+            "https://example.com/git/bar.git",
+            "master"
+        ]
+    ]
+    ```
 
 5. The Buildbot configuration requires an authenticated user to trigger builds. Add a user with:
 

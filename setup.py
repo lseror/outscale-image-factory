@@ -10,6 +10,7 @@ if sys.version_info[0] == 2:
     req.append('boto')
     scripts.append('create_ami=outscale_image_factory.create_ami:main')
     scripts.append('cleanup=outscale_image_factory.cleanup:main')
+    scripts.append('find_package_references=outscale_image_factory.find_package_references:main')
 
 if sys.version_info[0] == 3:
     if sys.version_info[1] < 2:

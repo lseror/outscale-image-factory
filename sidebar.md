@@ -7,6 +7,7 @@
 - [Create a Debian or Ubuntu image](#docs/debian)
 
 ## Manual pages
+- [omi-factory.1](man/omi-factory.1.html)
 - [build_ami.1](man/build_ami.1.html)
 - [build_ami_from_rootfs.1](man/build_ami_from_rootfs.1.html)
 - [cleanup.1](man/cleanup.1.html)

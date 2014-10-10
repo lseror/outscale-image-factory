@@ -53,6 +53,7 @@ def check_cmd(cmd, data='', dryrun=False):
 
     data = dict(
         cmd=cmd,
+        pwd=os.getcwd(),
         stdin=data,
         stdout=stdout,
         ret=ret,

@@ -21,9 +21,9 @@ The following commands are provided:
     Destroy an existing volume
   * `tkl-build`:
     Build a TKL appliance
-  * `install-iso`:
+  * `tkl-install-iso`:
     Install a system from an ISO file to a device
-  * `install-rootfs`:
+  * `tkl-install-rootfs`:
     Install a system from a rootfs to a device
   * `tkl-clean`:
     Clean TKL build dirs
@@ -126,9 +126,6 @@ Miscellaneous options:
 
 Installs a system from an ISO file to a device.
 
-Unless you are doing things manually, you do not need this command: it is
-called by `tkl-build`.
-
   * <appliance-or-iso>:
     Either the full path of an ISO file to install, or the name of a TKL
     appliance for which an ISO file has been built in the standard TKL build
@@ -161,7 +158,7 @@ Installs the content of a directory (the rootfs) on a device and makes it
 bootable.
 
 Unless you are doing things manually, you do not need this command: it is
-called by `install-iso`.
+called by `tkl-install-iso`.
 
   * <rootfs>:
     Directory containing the system to install.

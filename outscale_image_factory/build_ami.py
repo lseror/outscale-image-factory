@@ -87,21 +87,17 @@ def parser_tkl_install_iso(parser):
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
-def tkl_build(dev, app, git, patch_dir, patch_list, fab_dir):
+def tkl_build(app, git, fab_dir):
     """Build the TKL appliance.
 
-    dev: target block device
     app: turnkey app to build
     git: git repository containing turnkey apps
-    patch_dir: directory holding the patches applied by tklpatch
-    patch_list: list of patches applied by tklpatch
     fab_dir: turnkey build directory
     """
     core_repo = '{}/core.git'.format(TURNKEY_APPS_GIT)
     repo = '{}/{}'.format(git, app)
     products_dir = '{}/products'.format(fab_dir)
     app_dir = '{}/{}'.format(products_dir, app)
-    product_iso = '{}/build/product.iso'.format(app_dir)
 
     ok, err = _clone_or_update(core_repo, products_dir, 'core')
     if ok:
@@ -111,18 +107,13 @@ def tkl_build(dev, app, git, patch_dir, patch_list, fab_dir):
         ok, err = cd(app_dir)
     if ok:
         ok, err = check_cmd('make')
-    if ok:
-        ok, err = tkl_install_iso(dev, product_iso, patch_dir, patch_list)
     return ok, err
 
 
 def cmd_tkl_build(args):
     setup_environment(args.fab_dir)
-    ok, _ = tkl_build(args.device,
-                      args.app,
+    ok, _ = tkl_build(args.app,
                       args.turnkey_apps_git,
-                      args.patch_dir,
-                      PATCH_LIST + args.add_tklpatch,
                       args.fab_dir)
     return ok
 
@@ -131,10 +122,7 @@ def parser_tkl_build(parser):
     parser.description = 'Build a TKL appliance'
     parser.add_argument('app')
     parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
-    parser.add_argument('-d', '--device')
     parser.add_argument('-g', '--turnkey-apps-git', default=TURNKEY_APPS_GIT)
-    parser.add_argument('-p', '--patch-dir', default=PATCH_DIR)
-    parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
 def tkl_clean(app, fab_dir):

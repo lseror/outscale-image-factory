@@ -50,7 +50,7 @@ def tkl_install_iso(dev, product_iso, patch_dir, patch_list):
         logging.info('Extracting iso in {}'.format(work_dir))
         ok, err = check_cmd('tklpatch-extract-iso {}'.format(product_iso))
         if ok:
-            logging.info('Patching product'.format(work_dir))
+            logging.info('Applying patches')
             rootfs_dir = '{}/product.rootfs'.format(work_dir)
             for patch in patch_list:
                 ok, err = check_cmd(

@@ -8,6 +8,7 @@ import time
 import logging
 import json
 import sys
+import urllib2
 
 import boto.ec2
 import boto.exception
@@ -24,7 +25,6 @@ SNAPSHOT_COMPLETED = 'completed'
 
 # Defaults
 REGION = 'eu-west-1'
-BUILD_VOLUME_SIZE_GIB = 10
 BUILD_VOLUME_LOCATION = 'eu-west-1a'
 ROOT_DEV = '/dev/sda1'
 IMAGE_ARCH = 'x86_64'
@@ -130,6 +130,11 @@ def _tag(conn, object_id, tags_dict):
         conn.create_tags(object_id, tags_dict)
 
 
+def _get_instance_id():
+    fp = urllib2.urlopen('http://169.254.169.254/latest/meta-data/instance-id')
+    return fp.read()
+
+
 def attach_new_volume(conn, instance_id, volume_size_gib, volume_location,
                       volume_tags=None):
     """
@@ -182,8 +187,13 @@ def attach_new_volume(conn, instance_id, volume_size_gib, volume_location,
 def cmd_create_volume(args):
     tags = json.loads(args.tags)
     conn = boto.ec2.connect_to_region(args.region)
+    if args.instance_id:
+        instance_id = args.instance_id
+    else:
+        instance_id = _get_instance_id()
+        logging.info('Instance id is {}'.format(instance_id))
     volume_id, device, error = attach_new_volume(conn,
-                                                 args.instance_id,
+                                                 instance_id,
                                                  args.volume_size,
                                                  args.volume_location,
                                                  tags)
@@ -195,12 +205,12 @@ def cmd_create_volume(args):
 
 def parser_create_volume(parser):
     parser.description = 'Create and attach a new volume'
-    parser.add_argument('instance_id', metavar='INSTANCE_ID')
-    parser.add_argument('--volume-size', metavar='GiB',
-                        default=BUILD_VOLUME_SIZE_GIB)
+    parser.add_argument('--instance-id')
     parser.add_argument('--volume-location', default=BUILD_VOLUME_LOCATION)
     parser.add_argument('--region', default=REGION)
     parser.add_argument('--tags', metavar='JSON', default='{}')
+    parser.add_argument('volume_size', metavar='VOLUME_SIZE',
+                        type=int, help='Volume size in GiB')
 
 
 def detach_volume(conn, volume_id):

@@ -38,18 +38,19 @@ The following commands are provided:
 
 ## CREATE-VOLUME COMMAND
 
-`omi-factory create-volume` [<options>] <instance_id>
+`omi-factory create-volume` [<options>] <volume_size>
 
 Creates a new volume and attaches it to the instance. On success it will print
 the `DEVICE` and `VOLUME_ID` shell variables to `stdout`.
 
-  * <instance_id>:
-    The id of the instance the volume should be attached to.
+  * <volume_size>:
+    Size of the volume in GiBs.
 
 Options:
 
-  * `--volume-size` <size>:
-    Size of the volumne in giga bytes.
+  * `--instance-id` <instance_id>:
+    The id of the instance the volume should be attached to. Defaults to the
+    local instance.
 
   * `--volume-location` <location>:
     Which location to use for the volume.

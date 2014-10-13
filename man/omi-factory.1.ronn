@@ -122,20 +122,27 @@ Miscellaneous options:
 
 ## INSTALL-ISO COMMAND
 
-`omi-factory install-iso` [<options>] <iso-file>
+`omi-factory tkl-install-iso` [<options>] <appliance-or-iso>
 
 Installs a system from an ISO file to a device.
 
 Unless you are doing things manually, you do not need this command: it is
 called by `tkl-build`.
 
-  * <iso-file>:
-    Path to the ISO file to install.
+  * <appliance-or-iso>:
+    Either the full path of an ISO file to install, or the name of a TKL
+    appliance for which an ISO file has been built in the standard TKL build
+    directory.
+
+Mandatory Option:
+
+  * `-d` <device>, `--device` <device>:
+    The block device where the system is going to be installed.
 
 Options:
 
-  * `-d` <device>, `--device` <device>:
-    The block device onto which the ISO will be copied.
+  * `-f` <directory>, `--fab-dir` <directory>:
+    The TurnKey factory directory. The default is _/turnkey/fab_.
 
   * `-p` <directory>, `--patch-dir` <directory>:
     The directory holding the patches used by tklpatch(1) to modify the

@@ -66,8 +66,13 @@ def tkl_install_iso(dev, product_iso, patch_dir, patch_list):
 
 
 def cmd_tkl_install_iso(args):
+    if os.path.exists(args.appliance_or_iso):
+        iso = args.appliance_or_iso
+    else:
+        iso = os.path.join(args.fab_dir, 'products', args.appliance_or_iso,
+                           'build/product.iso')
     ok, _ = tkl_install_iso(args.device,
-                            args.iso,
+                            iso,
                             args.patch_dir,
                             PATCH_LIST + args.add_tklpatch)
     return ok
@@ -75,9 +80,10 @@ def cmd_tkl_install_iso(args):
 
 def parser_tkl_install_iso(parser):
     parser.description = 'Install a system from an ISO file to a device'
-    parser.add_argument('iso')
+    parser.add_argument('appliance_or_iso', metavar='APPLIANCE_OR_ISO')
     parser.add_argument('-d', '--device')
     parser.add_argument('-p', '--patch-dir', default=PATCH_DIR)
+    parser.add_argument('-f', '--fab-dir', default=FAB_PATH)
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 

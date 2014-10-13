@@ -66,6 +66,10 @@ def tkl_install_iso(dev, product_iso, patch_dir, patch_list):
 
 
 def cmd_tkl_install_iso(args):
+    # Setting up the environment here is important to ensure umask is set:
+    # When the script is run by Buildbot, Twisted sets the umask to 077, which
+    # causes some chmod calls in `tklpatch-apply` to fail.
+    setup_environment(args.fab_dir)
     if os.path.exists(args.appliance_or_iso):
         iso = args.appliance_or_iso
     else:

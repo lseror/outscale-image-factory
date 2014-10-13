@@ -114,9 +114,9 @@ for bin in wget git make rsync gpg parted python3
 do
     if ! which $bin >/dev/null
     then
-	echo "Missing dependency: $bin"
-	echo "For CentOS see: http://wiki.centos.org/AdditionalResources/Repositories/SCL"
-	exit 1
+        echo "Missing dependency: $bin"
+        echo "For CentOS see: http://wiki.centos.org/AdditionalResources/Repositories/SCL"
+        exit 1
     fi
 done
 

@@ -57,7 +57,8 @@ def main(argv=None):
     subparsers = parser.add_subparsers(dest='commands',
                                        title='Available commands')
 
-    lst = add_commands(subparsers, create_ami)
+    lst = add_commands(subparsers, globals())
+    lst += add_commands(subparsers, create_ami)
     lst += add_commands(subparsers, build_ami)
 
     parser.epilog = '\n'.join(['  {:21} {}'.format(x, y) for x, y in lst])

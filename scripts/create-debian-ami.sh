@@ -178,5 +178,5 @@ chroot $ROOTFS apt-get clean
 chroot $ROOTFS find /var/log -type f -exec rm {} +
 
 echo "Copying rootfs to device"
-python3 -m outscale_image_factory.build_ami_from_rootfs \
-    -v --device=$DEVICE --rootfs=$ROOTFS
+python -m outscale_image_factory.main \
+    install-rootfs --device=$DEVICE --rootfs=$ROOTFS

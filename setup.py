@@ -18,7 +18,6 @@ if sys.version_info[0] == 3:
         raise Exception('This package requires Python 3.2 or later')
     req.append('PyGithub>=1.25')
     scripts.append('build_ami=outscale_image_factory.build_ami_old:main')
-    scripts.append('build_ami_from_rootfs=outscale_image_factory.build_ami_from_rootfs:main')
     scripts.append('tklgit=outscale_image_factory.tklgit:main')
     scripts.append('create_fstab=outscale_image_factory.create_fstab:main')
     scripts.append('create_sources_list=outscale_image_factory.create_sources_list:main')

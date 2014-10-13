@@ -1,23 +1,11 @@
-#!/usr/bin/env python3
-"""
-Build VM disk image from Turnkey rootfs.
-"""
 import os
-import sys
 import logging
-import optparse
 import tempfile
 import time
 
 from outscale_image_factory.helper import check_cmd
 
-
-USAGE = '''
-apt-get install python3 rsync
-build_ami_from_rootfs.py -v --device=/dev/sdz --root=/turnkey/fab/product.rootfs
-'''
-
-# Partitions shoud be aligned on a multiple of 2048 sectors
+# Partitions should be aligned on a multiple of 2048 sectors
 # This is a 10G partition
 PARTITION_TABLE = [
     (2048, 20969391, 83),
@@ -52,7 +40,7 @@ def _sfdisk_part_table(dev, spec):
     return '\n'.join(lines) + '\n'
 
 
-def build_ami_from_rootfs(dev, rootfs, dryrun=False, partno=1):
+def install_rootfs(dev, rootfs, dryrun=False, partno=1):
     """
     Copy rootfs to block device, install grub.
 
@@ -61,6 +49,7 @@ def build_ami_from_rootfs(dev, rootfs, dryrun=False, partno=1):
 
     Return (ok, error) tuple.
     """
+    logging.info('Installing {} on {}'.format(rootfs, dev))
     logging.debug('Waiting for ' + dev)
     if not _wait_for_file(dev):
         return False, 'Timeout while waiting for ' + dev
@@ -124,43 +113,12 @@ def build_ami_from_rootfs(dev, rootfs, dryrun=False, partno=1):
     return ok, err
 
 
-def main():
-    """CLI."""
-    parser = optparse.OptionParser(usage=USAGE)
-    parser.add_option('-r', '--rootfs')
-    parser.add_option('-d', '--device')
-    parser.add_option(
-        '-v',
-        '--verbose',
-        action='count',
-        default=0,
-        help='use twice for debug output')
-    parser.add_option(
-        '-n',
-        '--dryrun',
-        default=False,
-        action='store_true',
-        help='dont actually do anything')
-    opt, _ = parser.parse_args()
-    if not opt.rootfs or not opt.device:
-        parser.print_help()
-        sys.exit(1)
+def cmd_install_rootfs(args):
+    ok, _ = install_rootfs(args.device, args.rootfs)
+    return ok
 
-    loglevel = logging.WARNING
-    if opt.verbose > 0:
-        loglevel = logging.INFO
-    if opt.verbose > 1:
-        loglevel = logging.DEBUG
-    logging.basicConfig(format='%(levelname)s:%(message)s', level=loglevel)
 
-    ok, error = build_ami_from_rootfs(
-        opt.device,
-        opt.rootfs,
-        opt.dryrun)
-    if not ok:
-        logging.error(repr(error))
-        sys.exit(1)
-    sys.exit(0)
-
-if __name__ == '__main__':
-    main()
+def parser_install_rootfs(parser):
+    parser.description = 'Install a system from a rootfs to a device'
+    parser.add_argument('rootfs')
+    parser.add_argument('-d', '--device')

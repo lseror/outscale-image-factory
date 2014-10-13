@@ -10,8 +10,9 @@ import sys
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-import create_ami
 import build_ami
+import create_ami
+import install
 
 
 def cmd_help(args):
@@ -60,6 +61,7 @@ def main(argv=None):
     lst = add_commands(subparsers, globals())
     lst += add_commands(subparsers, create_ami)
     lst += add_commands(subparsers, build_ami)
+    lst += add_commands(subparsers, install)
 
     parser.epilog = '\n'.join(['  {:21} {}'.format(x, y) for x, y in lst])
     parser.add_argument(

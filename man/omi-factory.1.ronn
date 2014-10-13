@@ -23,6 +23,8 @@ The following commands are provided:
     Build a TKL appliance
   * `install-iso`:
     Install a system from an ISO file to a device
+  * `install-rootfs`:
+    Install a system from a rootfs to a device
   * `tkl-clean`:
     Clean TKL build dirs
   * `create-image`:
@@ -143,6 +145,24 @@ Options:
     Add a patch to the list of patches applied by tklpatch(1). The patch must
     be copied to the patch directory beforehand, see the `--patch-dir` option.
     The default patch list is: _headless_, _outscale_.
+
+## INSTALL-ROOTFS COMMAND
+
+`omi-factory install-rootfs` [<options>] <rootfs>
+
+Installs the content of a directory (the rootfs) on a device and makes it
+bootable.
+
+Unless you are doing things manually, you do not need this command: it is
+called by `install-iso`.
+
+  * <rootfs>:
+    Directory containing the system to install.
+
+Mandatory option:
+
+  * `-d` <device>, `--device` <device>:
+    The block device onto which the ISO will be copied.
 
 ## TKL-CLEAN COMMAND
 

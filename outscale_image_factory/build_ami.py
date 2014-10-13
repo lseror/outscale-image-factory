@@ -8,7 +8,7 @@ import shutil
 import tempfile
 
 from outscale_image_factory.helper import check_cmd, cd
-from outscale_image_factory.build_ami_from_rootfs import build_ami_from_rootfs
+from outscale_image_factory.install import install_rootfs
 
 # Defaults
 TURNKEY_APPS_GIT = 'https://github.com/turnkeylinux-apps'
@@ -58,7 +58,7 @@ def install_iso(dev, product_iso, patch_dir, patch_list):
                 if not ok:
                     break
         if ok:
-            ok, err = build_ami_from_rootfs(dev, rootfs_dir)
+            ok, err = install_rootfs(dev, rootfs_dir)
     finally:
         logging.info('Deleting {}'.format(work_dir))
         shutil.rmtree(work_dir)

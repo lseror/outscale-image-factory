@@ -13,26 +13,18 @@
 \fBomi\-factory\fR provides a set of commands to create OMIs for TurnKey Linux appliances\.
 .
 .P
-It should be run from a TurnKey Linux development environment such as \fBtkldev\fR\. This command must be run as \fBroot\fR\.
+It should be run as root, from a TurnKey Linux development environment such as \fBtkldev\fR\.
 .
 .P
 The following commands are provided:
-.
-.TP
-\fBcreate\-image\fR
-Create an AMI from an existing volume
-.
-.TP
-\fBdestroy\-volume\fR
-Destroy an existing volume
 .
 .TP
 \fBcreate\-volume\fR
 Create and attach a new volume
 .
 .TP
-\fBtkl\-clean\fR
-Clean TKL build dirs
+\fBdestroy\-volume\fR
+Destroy an existing volume
 .
 .TP
 \fBtkl\-build\fR
@@ -41,6 +33,14 @@ Build a TKL appliance
 .TP
 \fBinstall\-iso\fR
 Install a system from an ISO file to a device
+.
+.TP
+\fBtkl\-clean\fR
+Clean TKL build dirs
+.
+.TP
+\fBcreate\-image\fR
+Create an AMI from an existing volume
 .
 .SH "COMMON OPTIONS"
 .
@@ -53,25 +53,25 @@ Be more verbose: print debug output\.
 Show the help message and exit\.
 .
 .SH "CREATE\-VOLUME COMMAND"
-\fBomi\-factory create\-volume\fR [\fIoptions\fR] \fIinstance_id\fR
+\fBomi\-factory create\-volume\fR [\fIoptions\fR] \fIvolume_size\fR
 .
 .P
 Creates a new volume and attaches it to the instance\. On success it will print the \fBDEVICE\fR and \fBVOLUME_ID\fR shell variables to \fBstdout\fR\.
 .
 .TP
-\fIinstance_id\fR
-The id of the instance the volume should be attached to\.
+\fIvolume_size\fR
+Size of the volume in GiBs\.
 .
 .P
 Options:
 .
 .TP
-\fB\-\-volume\-size\fR \fIsize\fR
-Size of the volumne in giga bytes\.
+\fB\-\-instance\-id\fR \fIinstance_id\fR
+The id of the instance the volume should be attached to\. Defaults to the local instance\.
 .
 .TP
 \fB\-\-volume\-location\fR \fIlocation\fR
-Which location to use for the volume\.
+Which location to use for the volume\. Defaults to \fIeu\-west\-1a\fR\.
 .
 .TP
 \fB\-\-region\fR \fIregion\fR
@@ -80,6 +80,23 @@ The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
 .TP
 \fB\-\-tags\fR \fIjson\fR
 Tags to assign to the volume\. The value of this option must be a dictionary represented as a JSON string, for example: \fB\-\-tags "{ \'user\': \'me\' }"\fR\.
+.
+.SH "DESTROY\-VOLUME COMMAND"
+`omi\-factory destroy\-volume [\fIoptions\fR] \fIvolume\-id\fR
+.
+.P
+Destroys a volume\.
+.
+.TP
+\fIvolume\-id\fR
+Which volume to destroy\.
+.
+.P
+Options:
+.
+.TP
+\fB\-\-region\fR \fIregion\fR
+The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
 .
 .SH "TKL\-BUILD COMMAND"
 \fBomi\-factory tkl\-build\fR [\fIoptions\fR] \fIapp\fR
@@ -95,37 +112,37 @@ The name of the TurnKey Linux appliance to build\.
 Mandatory option:
 .
 .TP
-\fB\-d\fR \fIdevice\fR, \fB\-\-device=\fR\fIdevice\fR
+\fB\-d\fR \fIdevice\fR, \fB\-\-device\fR \fIdevice\fR
 The block device onto which the appliance will be copied\.
 .
 .P
 Directory options:
 .
 .TP
-\fB\-p\fR \fIdirectory\fR, \fB\-\-patch\-dir=\fR\fIdirectory\fR
+\fB\-p\fR \fIdirectory\fR, \fB\-\-patch\-dir\fR \fIdirectory\fR
 The directory holding the patches used by tklpatch(1) to modify the appliance root filesystem\. The default is \fI/usr/local/share/tklpatch\fR\.
 .
 .TP
-\fB\-f\fR \fIdirectory\fR, \fB\-\-fab\-dir=\fR\fIdirectory\fR
+\fB\-f\fR \fIdirectory\fR, \fB\-\-fab\-dir\fR \fIdirectory\fR
 The TurnKey factory directory\. The default is \fI/turnkey/fab\fR\.
 .
 .TP
-\fB\-m\fR \fIdirectory\fR, \fB\-\-mount\-point=\fR\fIdirectory\fR
+\fB\-m\fR \fIdirectory\fR, \fB\-\-mount\-point\fR \fIdirectory\fR
 The temporary mount point used to mount the block device\. The default is \fI/mnt\fR\.
 .
 .TP
-\fB\-w\fR \fIdirectory\fR, \fB\-\-work\-dir=\fR\fIdirectory\fR
+\fB\-w\fR \fIdirectory\fR, \fB\-\-work\-dir\fR \fIdirectory\fR
 The directory used to extract the root filesystem and apply patches with tklpatch(1)\. The default is \fI/tmp\fR\.
 .
 .P
 Miscellaneous options:
 .
 .TP
-\fB\-g\fR \fIurl\fR, \fB\-\-turnkey\-apps\-git=\fR\fIurl\fR
+\fB\-g\fR \fIurl\fR, \fB\-\-turnkey\-apps\-git\fR \fIurl\fR
 The URL of the github account hosting each TurnKey Linux appliance\. The default is \fIhttps://github\.com/turnkeylinux\-apps\fR\.
 .
 .TP
-\fB\-t\fR \fIpatch\fR, \fB\-\-turnkey\-apps\-git=\fR\fIpatch\fR
+\fB\-t\fR \fIpatch\fR, \fB\-\-turnkey\-apps\-git\fR \fIpatch\fR
 Add a patch to the list of patches applied by tklpatch(1)\. The patch must be copied to the patch directory beforehand, see the \fB\-\-patch\-dir\fR option\. The default patch list is: \fIheadless\fR, \fIoutscale\fR\.
 .
 .SH "INSTALL\-ISO COMMAND"
@@ -149,12 +166,29 @@ Options:
 The block device onto which the ISO will be copied\.
 .
 .TP
-\fB\-p\fR \fIdirectory\fR, \fB\-\-patch\-dir=\fR\fIdirectory\fR
+\fB\-p\fR \fIdirectory\fR, \fB\-\-patch\-dir\fR \fIdirectory\fR
 The directory holding the patches used by tklpatch(1) to modify the appliance root filesystem\. The default is \fI/usr/local/share/tklpatch\fR\.
 .
 .TP
-\fB\-t\fR \fIpatch\fR, \fB\-\-turnkey\-apps\-git=\fR\fIpatch\fR
+\fB\-t\fR \fIpatch\fR, \fB\-\-turnkey\-apps\-git\fR \fIpatch\fR
 Add a patch to the list of patches applied by tklpatch(1)\. The patch must be copied to the patch directory beforehand, see the \fB\-\-patch\-dir\fR option\. The default patch list is: \fIheadless\fR, \fIoutscale\fR\.
+.
+.SH "TKL\-CLEAN COMMAND"
+\fBomi\-factory tkl\-clean\fR [\fIoptions\fR] \fIapp\fR
+.
+.P
+Cleans Turn Key Linux build dirs\.
+.
+.TP
+\fIapp\fR
+The name of the TurnKey Linux appliance to build\.
+.
+.P
+Options:
+.
+.TP
+\fB\-f\fR \fIdirectory\fR, \fB\-\-fab\-dir\fR \fIdirectory\fR
+The TurnKey factory directory\. The default is \fI/turnkey/fab\fR\.
 .
 .SH "CREATE\-IMAGE COMMAND"
 \fBomi\-factory create\-image\fR [\fIoptions\fR] \fIimage\-name\fR
@@ -191,40 +225,6 @@ The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
 .TP
 \fB\-\-tags\fR \fIjson\fR
 Tags to assign to the volume\. The value of this option must be a dictionary represented as a JSON string, for example: \fB\-\-tags "{ \'user\': \'me\' }"\fR\.
-.
-.SH "TKL\-CLEAN COMMAND"
-\fBomi\-factory tkl\-clean\fR [\fIoptions\fR] \fIapp\fR
-.
-.P
-Cleans Turn Key Linux build dirs\.
-.
-.TP
-\fIapp\fR
-The name of the TurnKey Linux appliance to build\.
-.
-.P
-Options:
-.
-.TP
-\fB\-f\fR \fIdirectory\fR, \fB\-\-fab\-dir=\fR\fIdirectory\fR
-The TurnKey factory directory\. The default is \fI/turnkey/fab\fR\.
-.
-.SH "DESTROY\-VOLUME COMMAND"
-`omi\-factory destroy\-volume [\fIoptions\fR] \fIvolume\-id\fR
-.
-.P
-Destroys a volume\.
-.
-.TP
-\fIvolume\-id\fR
-Which volume to destroy\.
-.
-.P
-Options:
-.
-.TP
-\fB\-\-region\fR \fIregion\fR
-The EC2 region to use\. Defaults to \fIeu\-west\-1\fR\.
 .
 .SH "SEE ALSO"
 tklpatch(1)

@@ -56,24 +56,28 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
 
 ## Creating an image for the appliance
 
- 1. Create a 10 GiB volume and attach it to the instance. On success `omi-factory` will print the `VOLUME_ID` and `DEVICE` shell variables to `stdout`:
- ```
- eval $(omi-factory attach-new-volume 10)
- ```
+1. Create a 10 GiB volume and attach it to the instance. On success `omi-factory` will print the `VOLUME_ID` and `DEVICE` shell variables to `stdout`:
 
- 2. Build the appliance and copy it to the device:
- ```
- APP=tkldev
- omi-factory tkl-build $APP --device=$DEVICE 2>&1 | tee /root/$APP.log
- ```
+    ```
+    eval $(omi-factory attach-new-volume 10)
+    ```
 
- 3. Create the machine image from the volume:
- ```
- omi-factory create-image app-$APP --volume-id $VOLUME_ID
- ```
+2. Build the appliance and copy it to the device:
 
- 4. Cleanup:
-```
- omi-factory tkl-clean $APP
- omi-factory destroy-volume $VOLUME_ID
- ```
+    ```
+    APP=tkldev
+    omi-factory tkl-build $APP --device=$DEVICE 2>&1 | tee /root/$APP.log
+    ```
+
+3. Create the machine image from the volume:
+
+    ```
+    omi-factory create-image app-$APP --volume-id $VOLUME_ID
+    ```
+
+4. Cleanup:
+
+    ```
+    omi-factory tkl-clean $APP
+    omi-factory destroy-volume $VOLUME_ID
+    ```

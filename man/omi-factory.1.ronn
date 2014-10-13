@@ -15,18 +15,18 @@ It should be run as root, from a TurnKey Linux development environment such as
 
 The following commands are provided:
 
-  * `create-image`:
-    Create an AMI from an existing volume
-  * `destroy-volume`:
-    Destroy an existing volume
   * `create-volume`:
     Create and attach a new volume
-  * `tkl-clean`:
-    Clean TKL build dirs
+  * `destroy-volume`:
+    Destroy an existing volume
   * `tkl-build`:
     Build a TKL appliance
   * `install-iso`:
     Install a system from an ISO file to a device
+  * `tkl-clean`:
+    Clean TKL build dirs
+  * `create-image`:
+    Create an AMI from an existing volume
 
 ## COMMON OPTIONS
 
@@ -53,7 +53,7 @@ Options:
     local instance.
 
   * `--volume-location` <location>:
-    Which location to use for the volume.
+    Which location to use for the volume. Defaults to _eu-west-1a_.
 
   * `--region` <region>:
     The EC2 region to use. Defaults to _eu-west-1_.
@@ -61,6 +61,20 @@ Options:
   * `--tags` <json>:
     Tags to assign to the volume. The value of this option must be a dictionary
     represented as a JSON string, for example: `--tags "{ 'user': 'me' }"`.
+
+## DESTROY-VOLUME COMMAND
+
+`omi-factory destroy-volume [<options>] <volume-id>
+
+Destroys a volume.
+
+  * <volume-id>:
+    Which volume to destroy.
+
+Options:
+
+  * `--region` <region>:
+    The EC2 region to use. Defaults to _eu-west-1_.
 
 ## TKL-BUILD COMMAND
 
@@ -130,6 +144,20 @@ Options:
     be copied to the patch directory beforehand, see the `--patch-dir` option.
     The default patch list is: _headless_, _outscale_.
 
+## TKL-CLEAN COMMAND
+
+`omi-factory tkl-clean` [<options>] <app>
+
+Cleans Turn Key Linux build dirs.
+
+  * <app>:
+    The name of the TurnKey Linux appliance to build.
+
+Options:
+
+  * `-f` <directory>, `--fab-dir` <directory>:
+    The TurnKey factory directory. The default is _/turnkey/fab_.
+
 ## CREATE-IMAGE COMMAND
 
 `omi-factory create-image` [<options>] <image-name>
@@ -159,34 +187,6 @@ Other options:
   * `--tags` <json>:
     Tags to assign to the volume. The value of this option must be a dictionary
     represented as a JSON string, for example: `--tags "{ 'user': 'me' }"`.
-
-## TKL-CLEAN COMMAND
-
-`omi-factory tkl-clean` [<options>] <app>
-
-Cleans Turn Key Linux build dirs.
-
-  * <app>:
-    The name of the TurnKey Linux appliance to build.
-
-Options:
-
-  * `-f` <directory>, `--fab-dir` <directory>:
-    The TurnKey factory directory. The default is _/turnkey/fab_.
-
-## DESTROY-VOLUME COMMAND
-
-`omi-factory destroy-volume [<options>] <volume-id>
-
-Destroys a volume.
-
-  * <volume-id>:
-    Which volume to destroy.
-
-Options:
-
-  * `--region` <region>:
-    The EC2 region to use. Defaults to _eu-west-1_.
 
 ## SEE ALSO
 

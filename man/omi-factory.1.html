@@ -58,11 +58,11 @@
     <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#COMMON-OPTIONS">COMMON OPTIONS</a>
     <a href="#CREATE-VOLUME-COMMAND">CREATE-VOLUME COMMAND</a>
+    <a href="#DESTROY-VOLUME-COMMAND">DESTROY-VOLUME COMMAND</a>
     <a href="#TKL-BUILD-COMMAND">TKL-BUILD COMMAND</a>
     <a href="#INSTALL-ISO-COMMAND">INSTALL-ISO COMMAND</a>
-    <a href="#CREATE-IMAGE-COMMAND">CREATE-IMAGE COMMAND</a>
     <a href="#TKL-CLEAN-COMMAND">TKL-CLEAN COMMAND</a>
-    <a href="#DESTROY-VOLUME-COMMAND">DESTROY-VOLUME COMMAND</a>
+    <a href="#CREATE-IMAGE-COMMAND">CREATE-IMAGE COMMAND</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
   </div>
 
@@ -86,18 +86,18 @@
 <p><strong>omi-factory</strong> provides a set of commands to create OMIs for TurnKey Linux
 appliances.</p>
 
-<p>It should be run from a TurnKey Linux development environment such as <code>tkldev</code>.
-This command must be run as <code>root</code>.</p>
+<p>It should be run as root, from a TurnKey Linux development environment such as
+<code>tkldev</code>.</p>
 
 <p>The following commands are provided:</p>
 
 <dl>
-<dt><code>create-image</code></dt><dd>Create an AMI from an existing volume</dd>
-<dt><code>destroy-volume</code></dt><dd>Destroy an existing volume</dd>
 <dt><code>create-volume</code></dt><dd>Create and attach a new volume</dd>
-<dt><code>tkl-clean</code></dt><dd>Clean TKL build dirs</dd>
+<dt><code>destroy-volume</code></dt><dd>Destroy an existing volume</dd>
 <dt><code>tkl-build</code></dt><dd>Build a TKL appliance</dd>
 <dt><code>install-iso</code></dt><dd>Install a system from an ISO file to a device</dd>
+<dt><code>tkl-clean</code></dt><dd>Clean TKL build dirs</dd>
+<dt><code>create-image</code></dt><dd>Create an AMI from an existing volume</dd>
 </dl>
 
 
@@ -111,24 +111,43 @@ This command must be run as <code>root</code>.</p>
 
 <h2 id="CREATE-VOLUME-COMMAND">CREATE-VOLUME COMMAND</h2>
 
-<p><code>omi-factory create-volume</code> [<var>options</var>] <var>instance_id</var></p>
+<p><code>omi-factory create-volume</code> [<var>options</var>] <var>volume_size</var></p>
 
 <p>Creates a new volume and attaches it to the instance. On success it will print
 the <code>DEVICE</code> and <code>VOLUME_ID</code> shell variables to <code>stdout</code>.</p>
 
 <dl>
-<dt><var>instance_id</var></dt><dd>The id of the instance the volume should be attached to.</dd>
+<dt><var>volume_size</var></dt><dd>Size of the volume in GiBs.</dd>
 </dl>
 
 
 <p>Options:</p>
 
 <dl>
-<dt><code>--volume-size</code> <var>size</var></dt><dd><p>Size of the volumne in giga bytes.</p></dd>
-<dt><code>--volume-location</code> <var>location</var></dt><dd><p>Which location to use for the volume.</p></dd>
+<dt><code>--instance-id</code> <var>instance_id</var></dt><dd><p>The id of the instance the volume should be attached to. Defaults to the
+local instance.</p></dd>
+<dt><code>--volume-location</code> <var>location</var></dt><dd><p>Which location to use for the volume. Defaults to <em>eu-west-1a</em>.</p></dd>
 <dt><code>--region</code> <var>region</var></dt><dd><p>The EC2 region to use. Defaults to <em>eu-west-1</em>.</p></dd>
 <dt><code>--tags</code> <var>json</var></dt><dd><p>Tags to assign to the volume. The value of this option must be a dictionary
 represented as a JSON string, for example: <code>--tags "{ 'user': 'me' }"</code>.</p></dd>
+</dl>
+
+
+<h2 id="DESTROY-VOLUME-COMMAND">DESTROY-VOLUME COMMAND</h2>
+
+<p>`omi-factory destroy-volume [<var>options</var>] <var>volume-id</var></p>
+
+<p>Destroys a volume.</p>
+
+<dl>
+<dt><var>volume-id</var></dt><dd>Which volume to destroy.</dd>
+</dl>
+
+
+<p>Options:</p>
+
+<dl>
+<dt><code>--region</code> <var>region</var></dt><dd>The EC2 region to use. Defaults to <em>eu-west-1</em>.</dd>
 </dl>
 
 
@@ -146,19 +165,19 @@ represented as a JSON string, for example: <code>--tags "{ 'user': 'me' }"</code
 <p>Mandatory option:</p>
 
 <dl>
-<dt><code>-d</code> <var>device</var>, <code>--device=</code><var>device</var></dt><dd>The block device onto which the appliance will be copied.</dd>
+<dt><code>-d</code> <var>device</var>, <code>--device</code> <var>device</var></dt><dd>The block device onto which the appliance will be copied.</dd>
 </dl>
 
 
 <p>Directory options:</p>
 
 <dl>
-<dt><code>-p</code> <var>directory</var>, <code>--patch-dir=</code><var>directory</var></dt><dd><p>The directory holding the patches used by <span class="man-ref">tklpatch<span class="s">(1)</span></span> to modify the
+<dt><code>-p</code> <var>directory</var>, <code>--patch-dir</code> <var>directory</var></dt><dd><p>The directory holding the patches used by <span class="man-ref">tklpatch<span class="s">(1)</span></span> to modify the
 appliance root filesystem. The default is <em>/usr/local/share/tklpatch</em>.</p></dd>
-<dt><code>-f</code> <var>directory</var>, <code>--fab-dir=</code><var>directory</var></dt><dd><p>The TurnKey factory directory. The default is <em>/turnkey/fab</em>.</p></dd>
-<dt><code>-m</code> <var>directory</var>, <code>--mount-point=</code><var>directory</var></dt><dd><p>The temporary mount point used to mount the block device.
+<dt><code>-f</code> <var>directory</var>, <code>--fab-dir</code> <var>directory</var></dt><dd><p>The TurnKey factory directory. The default is <em>/turnkey/fab</em>.</p></dd>
+<dt><code>-m</code> <var>directory</var>, <code>--mount-point</code> <var>directory</var></dt><dd><p>The temporary mount point used to mount the block device.
 The default is <em>/mnt</em>.</p></dd>
-<dt><code>-w</code> <var>directory</var>, <code>--work-dir=</code><var>directory</var></dt><dd><p>The directory used to extract the root filesystem and apply patches with
+<dt><code>-w</code> <var>directory</var>, <code>--work-dir</code> <var>directory</var></dt><dd><p>The directory used to extract the root filesystem and apply patches with
 <span class="man-ref">tklpatch<span class="s">(1)</span></span>. The default is <em>/tmp</em>.</p></dd>
 </dl>
 
@@ -166,9 +185,9 @@ The default is <em>/mnt</em>.</p></dd>
 <p>Miscellaneous options:</p>
 
 <dl>
-<dt><code>-g</code> <var>url</var>, <code>--turnkey-apps-git=</code><var>url</var></dt><dd><p>The URL of the github account hosting each TurnKey Linux appliance. The
+<dt><code>-g</code> <var>url</var>, <code>--turnkey-apps-git</code> <var>url</var></dt><dd><p>The URL of the github account hosting each TurnKey Linux appliance. The
 default is <em>https://github.com/turnkeylinux-apps</em>.</p></dd>
-<dt><code>-t</code> <var>patch</var>, <code>--turnkey-apps-git=</code><var>patch</var></dt><dd><p>Add a patch to the list of patches applied by <span class="man-ref">tklpatch<span class="s">(1)</span></span>. The patch must
+<dt><code>-t</code> <var>patch</var>, <code>--turnkey-apps-git</code> <var>patch</var></dt><dd><p>Add a patch to the list of patches applied by <span class="man-ref">tklpatch<span class="s">(1)</span></span>. The patch must
 be copied to the patch directory beforehand, see the <code>--patch-dir</code> option.
 The default patch list is: <em>headless</em>, <em>outscale</em>.</p></dd>
 </dl>
@@ -192,11 +211,29 @@ called by <code>tkl-build</code>.</p>
 
 <dl>
 <dt><code>-d</code> <var>device</var>, <code>--device</code> <var>device</var></dt><dd><p>The block device onto which the ISO will be copied.</p></dd>
-<dt><code>-p</code> <var>directory</var>, <code>--patch-dir=</code><var>directory</var></dt><dd><p>The directory holding the patches used by <span class="man-ref">tklpatch<span class="s">(1)</span></span> to modify the
+<dt><code>-p</code> <var>directory</var>, <code>--patch-dir</code> <var>directory</var></dt><dd><p>The directory holding the patches used by <span class="man-ref">tklpatch<span class="s">(1)</span></span> to modify the
 appliance root filesystem. The default is <em>/usr/local/share/tklpatch</em>.</p></dd>
-<dt><code>-t</code> <var>patch</var>, <code>--turnkey-apps-git=</code><var>patch</var></dt><dd><p>Add a patch to the list of patches applied by <span class="man-ref">tklpatch<span class="s">(1)</span></span>. The patch must
+<dt><code>-t</code> <var>patch</var>, <code>--turnkey-apps-git</code> <var>patch</var></dt><dd><p>Add a patch to the list of patches applied by <span class="man-ref">tklpatch<span class="s">(1)</span></span>. The patch must
 be copied to the patch directory beforehand, see the <code>--patch-dir</code> option.
 The default patch list is: <em>headless</em>, <em>outscale</em>.</p></dd>
+</dl>
+
+
+<h2 id="TKL-CLEAN-COMMAND">TKL-CLEAN COMMAND</h2>
+
+<p><code>omi-factory tkl-clean</code> [<var>options</var>] <var>app</var></p>
+
+<p>Cleans Turn Key Linux build dirs.</p>
+
+<dl>
+<dt class="flush"><var>app</var></dt><dd>The name of the TurnKey Linux appliance to build.</dd>
+</dl>
+
+
+<p>Options:</p>
+
+<dl>
+<dt><code>-f</code> <var>directory</var>, <code>--fab-dir</code> <var>directory</var></dt><dd>The TurnKey factory directory. The default is <em>/turnkey/fab</em>.</dd>
 </dl>
 
 
@@ -227,42 +264,6 @@ image.</dd>
 <dt><code>--region</code> <var>region</var></dt><dd><p>The EC2 region to use. Defaults to <em>eu-west-1</em>.</p></dd>
 <dt><code>--tags</code> <var>json</var></dt><dd><p>Tags to assign to the volume. The value of this option must be a dictionary
 represented as a JSON string, for example: <code>--tags "{ 'user': 'me' }"</code>.</p></dd>
-</dl>
-
-
-<h2 id="TKL-CLEAN-COMMAND">TKL-CLEAN COMMAND</h2>
-
-<p><code>omi-factory tkl-clean</code> [<var>options</var>] <var>app</var></p>
-
-<p>Cleans Turn Key Linux build dirs.</p>
-
-<dl>
-<dt class="flush"><var>app</var></dt><dd>The name of the TurnKey Linux appliance to build.</dd>
-</dl>
-
-
-<p>Options:</p>
-
-<dl>
-<dt><code>-f</code> <var>directory</var>, <code>--fab-dir=</code><var>directory</var></dt><dd>The TurnKey factory directory. The default is <em>/turnkey/fab</em>.</dd>
-</dl>
-
-
-<h2 id="DESTROY-VOLUME-COMMAND">DESTROY-VOLUME COMMAND</h2>
-
-<p>`omi-factory destroy-volume [<var>options</var>] <var>volume-id</var></p>
-
-<p>Destroys a volume.</p>
-
-<dl>
-<dt><var>volume-id</var></dt><dd>Which volume to destroy.</dd>
-</dl>
-
-
-<p>Options:</p>
-
-<dl>
-<dt><code>--region</code> <var>region</var></dt><dd>The EC2 region to use. Defaults to <em>eu-west-1</em>.</dd>
 </dl>
 
 

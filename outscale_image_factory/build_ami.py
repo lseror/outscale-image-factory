@@ -42,7 +42,7 @@ def _clone_or_update(repo, products_dir, app):
     return ok, err
 
 
-def install_iso(dev, product_iso, patch_dir, patch_list):
+def tkl_install_iso(dev, product_iso, patch_dir, patch_list):
     product_iso = os.path.abspath(product_iso)
     work_dir = tempfile.mkdtemp(suffix='-outscale-work')
     cd(work_dir)
@@ -65,15 +65,15 @@ def install_iso(dev, product_iso, patch_dir, patch_list):
     return ok, err
 
 
-def cmd_install_iso(args):
-    ok, _ = install_iso(args.device,
-                        args.iso,
-                        args.patch_dir,
-                        PATCH_LIST + args.add_tklpatch)
+def cmd_tkl_install_iso(args):
+    ok, _ = tkl_install_iso(args.device,
+                            args.iso,
+                            args.patch_dir,
+                            PATCH_LIST + args.add_tklpatch)
     return ok
 
 
-def parser_install_iso(parser):
+def parser_tkl_install_iso(parser):
     parser.description = 'Install a system from an ISO file to a device'
     parser.add_argument('iso')
     parser.add_argument('-d', '--device')
@@ -81,8 +81,8 @@ def parser_install_iso(parser):
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
-def build_ami(dev, app, git, patch_dir, patch_list, fab_dir):
-    """Build the image.
+def tkl_build(dev, app, git, patch_dir, patch_list, fab_dir):
+    """Build the TKL appliance.
 
     dev: target block device
     app: turnkey app to build
@@ -106,13 +106,13 @@ def build_ami(dev, app, git, patch_dir, patch_list, fab_dir):
     if ok:
         ok, err = check_cmd('make')
     if ok:
-        ok, err = install_iso(dev, product_iso, patch_dir, patch_list)
+        ok, err = tkl_install_iso(dev, product_iso, patch_dir, patch_list)
     return ok, err
 
 
 def cmd_tkl_build(args):
     setup_environment(args.fab_dir)
-    ok, _ = build_ami(args.device,
+    ok, _ = tkl_build(args.device,
                       args.app,
                       args.turnkey_apps_git,
                       args.patch_dir,
@@ -131,7 +131,7 @@ def parser_tkl_build(parser):
     parser.add_argument('-t', '--add-tklpatch', action='append', default=[])
 
 
-def clean(app, fab_dir):
+def tkl_clean(app, fab_dir):
     """Clean everything."""
     app_dir = os.path.join(fab_dir, 'products', app)
 
@@ -143,7 +143,7 @@ def clean(app, fab_dir):
 
 def cmd_tkl_clean(args):
     setup_environment(args.fab_dir)
-    clean(args.app, args.fab_dir)
+    tkl_clean(args.app, args.fab_dir)
     return True
 
 

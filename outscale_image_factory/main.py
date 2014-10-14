@@ -10,9 +10,16 @@ import sys
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-import build_ami
-import create_ami
-import install
+try:
+    import boto
+    HAS_BOTO = True
+except ImportError:
+    HAS_BOTO = False
+
+from outscale_image_factory import build_ami
+from outscale_image_factory import install
+if HAS_BOTO:
+    from outscale_image_factory import create_ami
 
 
 def cmd_help(args):
@@ -59,11 +66,15 @@ def main(argv=None):
                                        title='Available commands')
 
     lst = add_commands(subparsers, globals())
-    lst += add_commands(subparsers, create_ami)
+    if HAS_BOTO:
+        lst += add_commands(subparsers, create_ami)
     lst += add_commands(subparsers, build_ami)
     lst += add_commands(subparsers, install)
 
     parser.epilog = '\n'.join(['  {:21} {}'.format(x, y) for x, y in lst])
+    if not HAS_BOTO:
+        parser.epilog += '\n\nNOTE: AMI commands are disabled because the ' + \
+                         'Python Boto module is not installed.'
     parser.add_argument(
         '-v',
         '--verbose',

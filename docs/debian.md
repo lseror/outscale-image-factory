@@ -12,13 +12,22 @@
     ```
 
 4. **Download the Debian or Ubuntu archive signing keys** and copy them to the instance:
-    1. **For Debian** the keys are available from [ftp-master.debian.org](https://ftp-master.debian.org/keys.html).
+    1. **For Debian** the keys are available from the binary package:
+
+        ```
+        DEB=debian-archive-keyring_2012.4_all.deb
+        wget http://ftp.fr.debian.org/debian/pool/main/d/debian-archive-keyring/$DEB
+        ar x $DEB
+        tar xf data.tar.gz
+        ```
+        After this, keyring files are in `$PWD/usr/share/keyrings`.
+
     2. **For Ubuntu** the keys are available from the source package:
 
         ```
         TGZ=ubuntu-keyring_2012.05.19.tar.gz
         wget http://archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-keyring/$TGZ
-        tar xvzf $TGZ
+        tar xf $TGZ
         ```
 
     3. **Another option** is to get the keys from an existing Debian or Ubuntu installation and to copy them to the instance:

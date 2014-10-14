@@ -29,12 +29,12 @@
         <centos_instance>:
         ```
 
-5. **Install missing dependencies**. On **CentOS 6.5** install `git`, `parted` and `python33`. To install Python 3.3, install the [SCL](http://wiki.centos.org/AdditionalResources/Repositories/SCL) release file first:
+5. **Install missing dependencies**. On **CentOS 6.5** install `git`, `parted` and `python27`. To install Python 2.7, install the [SCL](http://wiki.centos.org/AdditionalResources/Repositories/SCL) release file first:
 
     ```
     yum install -y git parted
     yum install -y centos-release-SCL
-    yum install -y python33
+    yum install -y python27
     ```
 
 6. **Run the image creation script**.

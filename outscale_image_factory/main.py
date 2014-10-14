@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 """
 Create a VM image from a build volume.
-
-Written in Python 2 to integrate with Buildbot and Boto.
 """
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import logging
 import types
 import sys

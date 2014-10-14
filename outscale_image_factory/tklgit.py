@@ -1,10 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 """
 Generate a list of Turnkey Linux repositories.
 
 Dependencies:
  http://jacquev6.github.io/PyGithub/v1/
 """
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import sys
 import json
 import github

@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 Build VM disk image from a Turnkey recipe.
 """
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import os
 import logging
 import shutil

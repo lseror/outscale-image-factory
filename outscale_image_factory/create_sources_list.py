@@ -1,7 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/env python2
 """
 Create a sources.list file for Debian or Ubuntu.
 """
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import sys
 
 DEBIAN_RELEASES = set([

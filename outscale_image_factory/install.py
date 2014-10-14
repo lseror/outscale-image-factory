@@ -1,3 +1,5 @@
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import os
 import logging
 import tempfile
@@ -73,7 +75,7 @@ def install_rootfs(dev, rootfs, dryrun=False, partno=1):
         ['Mounting FS {} on {}'.format(part, mnt),
          'mount -t ext4 {} {}'.format(part, mnt)],
         ['Creating fstab',
-         'python3 -m outscale_image_factory.create_fstab {}/etc/fstab {}'
+         'python -m outscale_image_factory.create_fstab {}/etc/fstab {}'
          .format(rootfs, part)],
         ['Copying rootfs {} to {}'.format(rootfs, mnt),
          'rsync -a {}/ {}'.format(rootfs, mnt)],

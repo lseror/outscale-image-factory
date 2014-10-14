@@ -1,9 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 """
 Cleanup EC2 objects left behind by the factory.
-
-Written in Python 2 to use Boto.
 """
+from __future__ import division, absolute_import, print_function, unicode_literals
 
 import json
 import sys

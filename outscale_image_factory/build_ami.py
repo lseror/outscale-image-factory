@@ -62,7 +62,7 @@ def tkl_install_iso(dev, product_iso, patch_dir, patch_list):
             ok, err = install_rootfs(dev, rootfs_dir)
     finally:
         logging.info('Deleting {}'.format(work_dir))
-        shutil.rmtree(work_dir)
+        shutil.rmtree(work_dir.encode('utf-8'))
     return ok, err
 
 

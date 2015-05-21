@@ -56,9 +56,11 @@ DISTRO=$4
 MIRROR=$5
 
 # Urls
-GIT_DEBOOTSTRAP='git://anonscm.debian.org/d-i/debootstrap.git'
-GIT_MAKEDEV='git://git.gag.com/debian/makedev'
-GIT_TOOLS='git://github.com/nodalink/outscale-image-factory.git'
+GIT_TOOLS='https://github.com/nodalink/outscale-image-factory.git'
+
+DEBOOTSTRAP_VERSION="1.0.48+deb7u2"
+DEBOOTSTRAP_URL="http://ftp.debian.org/debian/pool/main/d/debootstrap/debootstrap_${DEBOOTSTRAP_VERSION}.tar.gz"
+
 MAKEDEV_VERSION=2.3.1
 MAKEDEV_URL="http://ftp.debian.org/debian/pool/main/m/makedev/makedev_${MAKEDEV_VERSION}.orig.tar.gz"
 
@@ -69,7 +71,7 @@ BUILDDIR=${BASEDIR}/build
 mkdir -p $SRCDIR $BUILDDIR
 
 ROOTFS=${BUILDDIR}/${DISTRO}
-DEBOOTSTRAP_DIR=$SRCDIR/debootstrap
+DEBOOTSTRAP_DIR=$SRCDIR/debootstrap-${DEBOOTSTRAP_VERSION}
 MAKEDEV=$SRCDIR/makedev-${MAKEDEV_VERSION}.orig/MAKEDEV
 PYTHONPATH=$SRCDIR/outscale-image-factory
 OVERLAY=$SRCDIR/outscale-image-factory/tklpatch/outscale/overlay
@@ -166,7 +168,7 @@ then
 fi
 chmod +x $MAKEDEV
 
-git_clone $GIT_DEBOOTSTRAP $SRCDIR/debootstrap
+curl $DEBOOTSTRAP_URL | tar -C $SRCDIR -xz
 git_clone $GIT_TOOLS $SRCDIR/outscale-image-factory
 
 step "Building debootstrap"

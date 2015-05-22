@@ -150,7 +150,7 @@ def attach_new_volume(conn, instance_id, volume_size_gib, volume_location,
     error = None
 
     try:
-        logging.info('Creating build volume')
+        logging.info('Creating volume')
         volume = conn.create_volume(volume_size_gib, volume_location)
         volume_id = volume.id
         _wait_for(volume, AVAILABLE)

@@ -135,8 +135,8 @@ def _get_instance_id():
     return fp.read()
 
 
-def attach_new_volume(conn, instance_id, volume_size_gib, volume_location,
-                      volume_tags=None):
+def create_volume(conn, instance_id, volume_size_gib, volume_location,
+                  volume_tags=None):
     """
     Create a new volume and attach it to a buildslave.
 
@@ -192,11 +192,11 @@ def cmd_create_volume(args):
     else:
         instance_id = _get_instance_id()
         logging.info('Instance id is {}'.format(instance_id))
-    volume_id, device, error = attach_new_volume(conn,
-                                                 instance_id,
-                                                 args.volume_size,
-                                                 args.volume_location,
-                                                 tags)
+    volume_id, device, error = create_volume(conn,
+                                             instance_id,
+                                             args.volume_size,
+                                             args.volume_location,
+                                             tags)
 
     if error is None:
         sys.stdout.write('VOLUME_ID={}\nDEVICE={}\n' .format(volume_id, device))

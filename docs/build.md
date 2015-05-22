@@ -28,6 +28,7 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
 1. Install Outscale factory tools:
 
     ```
+    apt-get update
     apt-get install python-setuptools python3-setuptools wget
     make -C /usr/src/outscale-image-factory install
     ```
@@ -62,20 +63,35 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
     eval $(omi-factory create-volume 10)
     ```
 
-2. Build the appliance and copy it to the device:
+2. Build the appliance .iso file:
 
     ```
     APP=tkldev
-    omi-factory tkl-build $APP --device=$DEVICE 2>&1 | tee /root/$APP.log
+    omi-factory tkl-build $APP
     ```
 
-3. Create the machine image from the volume:
+    or if you want to get the appliance from a different repository:
+
+    ```
+    omi-factory tkl-build --turnkey-apps-git https://github.com/foo $APP
+    ```
+
+    This will pull the appliance definition from `https://github.com/foo/$APP` instead of `https://github.com/turnkeylinux-apps`.
+
+
+3. Install the .iso to the volume:
+
+    ```
+    omi-factory tkl-install-iso --device $DEVICE $APP
+    ```
+
+4. Create the machine image from the volume:
 
     ```
     omi-factory create-image app-$APP --volume-id $VOLUME_ID
     ```
 
-4. Cleanup:
+5. Cleanup:
 
     ```
     omi-factory tkl-clean $APP

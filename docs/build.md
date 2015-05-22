@@ -59,7 +59,7 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
 1. Create a 10 GiB volume and attach it to the instance. On success `omi-factory` will print the `VOLUME_ID` and `DEVICE` shell variables to `stdout`:
 
     ```
-    eval $(omi-factory attach-new-volume 10)
+    eval $(omi-factory create-volume 10)
     ```
 
 2. Build the appliance and copy it to the device:

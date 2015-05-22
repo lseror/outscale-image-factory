@@ -18,7 +18,7 @@ Creating a Buildbot from scratch can be done by following these steps:
 
 1. Follow the [bootstrap howto](#docs/bootstrap).
 
-2. Create a instance of the TKLDev image you just created.
+2. Create an instance of the TKLDev image you just created.
 
 ## Build Buildbot AMIs
 

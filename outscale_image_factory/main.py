@@ -16,7 +16,7 @@ try:
 except ImportError:
     HAS_BOTO = False
 
-from outscale_image_factory import build_ami
+from outscale_image_factory import tkl_commands
 from outscale_image_factory import install
 if HAS_BOTO:
     from outscale_image_factory import create_ami
@@ -68,7 +68,7 @@ def main(argv=None):
     lst = add_commands(subparsers, globals())
     if HAS_BOTO:
         lst += add_commands(subparsers, create_ami)
-    lst += add_commands(subparsers, build_ami)
+    lst += add_commands(subparsers, tkl_commands)
     lst += add_commands(subparsers, install)
 
     parser.epilog = '\n'.join(['  {:21} {}'.format(x, y) for x, y in lst])

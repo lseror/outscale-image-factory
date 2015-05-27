@@ -13,6 +13,9 @@ import urllib2
 import boto.ec2
 import boto.exception
 
+from outscale_image_factory import config
+
+
 # Status strings
 AVAILABLE = 'available'
 STOPPED = 'stopped'
@@ -22,12 +25,6 @@ RUNNING = 'running'
 SNAPSHOT_PENDING = 'pending'
 SNAPSHOT_ERROR = 'error'
 SNAPSHOT_COMPLETED = 'completed'
-
-# Defaults
-REGION = 'eu-west-1'
-BUILD_VOLUME_LOCATION = 'eu-west-1a'
-ROOT_DEV = '/dev/sda1'
-IMAGE_ARCH = 'x86_64'
 
 
 class _OIFError(Exception):
@@ -204,10 +201,11 @@ def cmd_create_volume(args):
 
 
 def parser_create_volume(parser):
+    dct = config.load()
     parser.description = 'Create and attach a new volume'
     parser.add_argument('--instance-id')
-    parser.add_argument('--volume-location', default=BUILD_VOLUME_LOCATION)
-    parser.add_argument('--region', default=REGION)
+    parser.add_argument('--volume-location', default=dct['volume-location'])
+    parser.add_argument('--region', default=dct['region'])
     parser.add_argument('--tags', metavar='JSON', default='{}')
     parser.add_argument('volume_size', metavar='VOLUME_SIZE',
                         type=int, help='Volume size in GiB')
@@ -249,10 +247,8 @@ def detach_volume(conn, volume_id):
     return ok, error
 
 
-def create_image(conn, image_name, volume_id,
-                 image_arch=IMAGE_ARCH,
-                 image_description=None, tags=None,
-                 root_dev=ROOT_DEV):
+def create_image(conn, image_name, volume_id, image_arch=None,
+                 image_description=None, tags=None, root_dev=None):
     """
     Create a new machine image from a build volume.
 
@@ -262,6 +258,12 @@ def create_image(conn, image_name, volume_id,
     Unsupported parameters by Outscale's register_image():
     image_location, kernel_id, ramdisk_id.
     """
+
+    dct = config.load()
+    if image_arch is None:
+        image_arch = dct['image-arch']
+    if root_dev is None:
+        root_dev = dct['root-dev']
 
     image_id = None
     error = None
@@ -325,12 +327,14 @@ def cmd_create_image(args):
 
 
 def parser_create_image(parser):
+    dct = config.load()
+
     parser.description = 'Create an AMI from an existing volume'
     parser.add_argument('image_name', metavar='IMAGE_NAME', default=None)
     parser.add_argument('--volume-id', default=None)
     parser.add_argument('--image-description', default=None)
-    parser.add_argument('--image-arch', default=IMAGE_ARCH)
-    parser.add_argument('--region', default=REGION)
+    parser.add_argument('--image-arch', default=dct['image-arch'])
+    parser.add_argument('--region', default=dct['region'])
     parser.add_argument('--tags', metavar='JSON', default='{}')
 
 
@@ -374,6 +378,8 @@ def cmd_destroy_volume(args):
 
 
 def parser_destroy_volume(parser):
+    dct = config.load()
+
     parser.description = 'Destroy an existing volume'
     parser.add_argument('volume_id', metavar='VOLUME_ID')
-    parser.add_argument('--region', default=REGION)
+    parser.add_argument('--region', default=dct['region'])

@@ -57,6 +57,8 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
 
 ## Creating an image for the appliance
 
+By default the commands use the `eu-west-1` region and `eu-west-1a` zone. You can pass `--region` and `--volume-location` to override these values.
+
 1. Create a 10 GiB volume and attach it to the instance. On success `omi-factory` will print the `VOLUME_ID` and `DEVICE` shell variables to `stdout`:
 
     ```

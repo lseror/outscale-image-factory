@@ -16,6 +16,17 @@ This example rebuilds the `tkldev` appliance with itself. Each appliance is host
     ./tkldev-setup
     ```
 
+    This command download some images and clone some TKL repositories.
+
+    Attention: There is currently (as of 2015.05.27) an issue with the latest version of the code from the `common` repository: it only works with Debian Jessie, not Debian Squeeze. To workaround that problem, do this:
+
+    ```
+    cd /turnkey/fab/common
+    git checkout c5107c75eb5f26a5237393d0f0428b9c719d2be7
+    ```
+
+    (source: <http://www.turnkeylinux.org/forum/support/20150508/tkldev-make-failing-core-and-others-no-changes#comment-23122>)
+
 1. Install TKLPatch:
 
     ```

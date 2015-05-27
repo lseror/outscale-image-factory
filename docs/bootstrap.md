@@ -1,14 +1,16 @@
 # Bootstraping a Turnkey Linux factory on the Outscale cloud
 
- 1. Create a Linux instance. This example uses a Debian Squeeze instance. Attach a `20GB` volume named `/dev/sdb` to the instance.
+ 1. Create a Linux instance. This example uses a Debian Wheezy instance.
 
- 2. Open a shell on the instance and install the dependencies:
+ 2. Attach a `20GB` volume named `/dev/sdb` to the instance.
+
+ 3. Open a shell on the instance and install the dependencies:
  ```
 apt-get update
 apt-get install qemu-utils unzip parted lvm2 git rsync wget
  ```
  
- 3. Download the [tkldev appliance VMDK](http://www.turnkeylinux.org/tkldev) and unpack it:
+ 4. Download the [tkldev appliance VMDK](http://www.turnkeylinux.org/tkldev) and unpack it:
  ```
 ZIPFILE=turnkey-tkldev-13.0-wheezy-amd64-vmdk.zip
 wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
@@ -16,7 +18,7 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  cd turnkey-tkldev-13.0-wheezy-amd64/
  ```
 
- 4. Convert the VMDK to a raw image with `qemu-img` and copy it to `/dev/sdb`:
+ 5. Convert the VMDK to a raw image with `qemu-img` and copy it to `/dev/sdb`:
  ```
  qemu-img convert -O raw \
 	 turnkey-tkldev-13.0-wheezy-amd64.vmdk \
@@ -25,7 +27,7 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  sync
  ```
 
- 5. Activate the LVM volume:
+ 6. Activate the LVM volume:
  ```
  partprobe /dev/sdb
  vgscan
@@ -33,7 +35,7 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  sleep 3
  ```
  
- 6. Mount the filesystems under `/mnt`:
+ 7. Mount the filesystems under `/mnt`:
   ```
  mount /dev/mapper/turnkey-root /mnt
  mount /dev/sdb1 /mnt/boot
@@ -42,13 +44,13 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  mount --bind /sys /mnt/sys
 ```
 
- 7. Clone the factory tools under `/mnt/usr/src`:
+ 8. Clone the factory tools under `/mnt/usr/src`:
  ```
  cd /mnt/usr/src
  git clone https://github.com/nodalink/outscale-image-factory.git
  ```
 	 
- 8. Apply the Turnkey Linux patches by hand:
+ 9. Apply the Turnkey Linux patches by hand:
  ```
  CHROOT=/mnt
  TOOLS=/usr/src/outscale-image-factory
@@ -57,12 +59,12 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  chroot $CHROOT $TOOLS/tklpatch/outscale/conf
  ```
 
- 8. Update the grub config:
+ 10. Update the grub config:
  ```
  chroot /mnt update-grub
  ```
 
- 10. Cleanup:
+ 11. Cleanup:
  ```
  sync
  cd /
@@ -73,4 +75,4 @@ wget http://downloads.sourceforge.net/project/turnkeylinux/vmdk/$ZIPFILE
  umount /mnt
  ```
 
- 11. Detach the `/dev/sdb` volume, attach it as the root filesystem on an instance (`/dev/sda1`) and boot the factory.
+ 12. Detach the `/dev/sdb` volume and create an OMI from it.

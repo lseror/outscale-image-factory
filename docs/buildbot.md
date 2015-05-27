@@ -2,6 +2,34 @@
 
 ## Global Overview
 
+The whole TKL Buildbot system is made up of four git repositories:
+
+### outscale-image-factory
+
+URL: <http://github.com/nodalink/outscale-image-factory>
+
+Contains the code which creates an OMI from a TKL definition.
+
+### outscale-factory-builbot
+
+URL: <http://github.com/nodalink/outscale-factory-buildbot>
+
+Buildbot configuration.
+
+### outscale-factory-master
+
+URL: <http://github.com/nodalink/outscale-factory-master>
+
+TKL definition for the Buildbot master machine.
+
+### outscale-factory-slave
+
+URL: <http://github.com/nodalink/outscale-factory-slave>
+
+TKL definition for the Buildbot slave machine.
+
+## Steps
+
 Creating a Buildbot from scratch can be done by following these steps:
 
 1. Bootstrap a TKLDev image
